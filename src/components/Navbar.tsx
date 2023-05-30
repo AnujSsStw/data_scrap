@@ -27,6 +27,8 @@ import {
 import { useEffect, useState } from "react";
 import { account, avatars } from "~/utils/appwrite";
 
+export let token: string;
+
 export function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
   const [hasUser, setUser] = useState(false);
@@ -44,6 +46,21 @@ export function WithSubnavigation() {
         setUser(false);
         console.log(error);
       });
+  }, []);
+
+  useEffect(() => {
+    const isPresent = window.localStorage.getItem("jwt");
+    if (hasUser && !isPresent) {
+      account
+        .createJWT()
+        .then((response) => {
+          console.log(response);
+          window.localStorage.setItem("jwt", response.jwt);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }, []);
 
   return (
