@@ -12,16 +12,26 @@ import Head from "next/head";
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { functions } from "~/utils/appwrite";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { UserContext } from "~/context";
 
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // const createCollection = api.appwrite.createCollection.useMutation();
+
   const [topic, setTopic] = useState<string>("");
+
+  // const { user } = useContext(UserContext);
 
   const handleSearch = async () => {
     try {
-      const res = await functions.createExecution("6476119d046b9e082a21");
+      const data = JSON.stringify({ q: topic });
+      const res = await functions.createExecution("64763af50eff7902e26b");
       console.log(JSON.stringify(res.response, null, 2));
+      // const res = await createCollection.mutateAsync({
+      //   collectionName: user?.name as string,
+      // });
+      // console.log(res);
     } catch (error) {
       console.log(error);
     }

@@ -24,26 +24,30 @@ import {
   ChevronRightIcon,
   SunIcon,
 } from "@chakra-ui/icons";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { account, avatars } from "~/utils/appwrite";
+import { UserContext } from "~/context";
 
 export let token: string;
 
 export function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
-  const [hasUser, setUser] = useState(false);
+  const [hasUser, setHasUser] = useState(false);
   const [avatar, setAvatar] = useState<any>();
+
+  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
     account
       .get()
       .then((response) => {
-        setUser(true);
+        setHasUser(true);
+        setUser(response);
         const result = avatars.getInitials(response.name);
         setAvatar(result);
       })
       .catch((error) => {
-        setUser(false);
+        setHasUser(false);
         console.log(error);
       });
   }, []);

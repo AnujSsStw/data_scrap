@@ -1,0 +1,30 @@
+{
+  "projectId": "6463a34a73ca03c70d35",
+  "projectName": "test",
+  "functions": [
+    {
+      "$id": "64763af50eff7902e26b",
+      "name": "get titles",
+      "runtime": "python-3.9",
+      "path": "functions/get titles",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 300
+    },
+    {
+      "$id": "6478a57a1bc6f18145b7",
+      "name": "create user collection",
+      "runtime": "node-16.0",
+      "path": "functions/create user collection",
+      "entrypoint": "src/index.js",
+      "ignore": ["node_modules", ".npm"],
+      "execute": [],
+      "events": ["users.*.create"],
+      "schedule": "",
+      "timeout": 30
+    }
+  ]
+}
