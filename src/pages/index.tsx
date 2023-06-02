@@ -14,28 +14,56 @@ import { api } from "~/utils/api";
 import { functions } from "~/utils/appwrite";
 import { useContext, useState } from "react";
 import { UserContext } from "~/context";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
   // const createCollection = api.appwrite.createCollection.useMutation();
 
   const [topic, setTopic] = useState<string>("");
+  const [data, setData] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any[]>([]);
 
+  const router = useRouter();
   // const { user } = useContext(UserContext);
+  const mutfn = async ({
+    functionId,
+    payload,
+  }: {
+    functionId: string;
+    payload: string;
+  }) => {
+    return await functions.createExecution(functionId, payload);
+  };
+
+  const mutation = useMutation({
+    mutationFn: mutfn,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
 
   const handleSearch = async () => {
     try {
-      const data = JSON.stringify({ q: topic });
-      const res = await functions.createExecution("64763af50eff7902e26b");
-      console.log(JSON.stringify(res.response, null, 2));
-      // const res = await createCollection.mutateAsync({
-      //   collectionName: user?.name as string,
-      // });
-      // console.log(res);
+      const payload = JSON.stringify({ q: topic });
+      const { response } = await mutation.mutateAsync({
+        functionId: "64763af50eff7902e26b",
+        payload,
+      });
+
+      // const { response } = await functions.createExecution(
+      //   "64763af50eff7902e26b",
+      //   payload
+      // );
+
+      const a = JSON.parse(response).subreddits;
+      setData(a);
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <>
       <Head>
@@ -61,6 +89,56 @@ const Home: NextPage = () => {
           <Button colorScheme="teal" variant="outline" onClick={handleSearch}>
             serach
           </Button>
+        </Box>
+        <Link
+          href={{
+            pathname: "/options",
+            query: { selected: selected },
+          }}
+        >
+          <Box
+            onClick={() => {
+              console.log(selected);
+            }}
+          >
+            Next
+          </Box>
+        </Link>
+        <Box
+          maxW={"container.lg"}
+          mt={"20"}
+          mx={"auto"}
+          display={"flex"}
+          flexDirection={"column"}
+        >
+          {data.length > 0 &&
+            data.map((item, idx) => {
+              return (
+                //  i want a list here
+                <Box
+                  key={idx}
+                  p={5}
+                  shadow="md"
+                  borderWidth="1px"
+                  // flex="1"
+                  borderRadius="md"
+                  m={"2"}
+                  bg={selected.includes(item) ? "green.100" : ""}
+                >
+                  <Box
+                    onClick={() => {
+                      setSelected([...selected, item]);
+                    }}
+                    _hover={{ cursor: "pointer" }}
+                  >
+                    Select
+                  </Box>
+                  <Link href={item}>
+                    <div>{item}</div>
+                  </Link>
+                </Box>
+              );
+            })}
         </Box>
       </main>
     </>

@@ -25,6 +25,18 @@
       "events": ["users.*.create"],
       "schedule": "",
       "timeout": 30
+    },
+    {
+      "$id": "647a0ce22f8ba5b0dc88",
+      "name": "urls txt",
+      "runtime": "python-3.9",
+      "path": "functions/urls txt",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 300
     }
   ]
 }
