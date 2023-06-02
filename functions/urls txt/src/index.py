@@ -1,6 +1,8 @@
 from appwrite.client import Client
 import praw
 import json
+import random
+import string
 
 from appwrite.input_file import InputFile
 from appwrite.id import ID
@@ -67,18 +69,19 @@ def main(req, res):
     user_agent="sheesh",
   )
 
+  # payload dict: {subreddits: str[], limit: int, userId: str{todo}, fileType: str{todo}}
+
   actual_posts_url = []
   subreddits = None
   try:
     payload = json.loads(req.payload)
-    # type of subreddits is str[]
     subreddits = payload['subreddits']
     # limit = payload['limit']
 
     print(subreddits)
 
     for subreddit in subreddits:
-      posts = reddit.subreddit(subreddit).hot(limit=5)
+      posts = reddit.subreddit(subreddit).hot(limit=payload['limit'])
       for post in posts:
         actual_posts_url.append(post.url)
 
@@ -89,14 +92,23 @@ def main(req, res):
     file = file_contents.encode('utf-8')
 
     # # Create a file object with the contents
-    result = storage.create_file('647a1723a374f6845b7a', ID.unique(), InputFile.from_bytes(file, "exx.txt"))
+    file_name = randomString() + '.txt'
+    result = storage.create_file('647a1723a374f6845b7a', ID.unique(), InputFile.from_bytes(file, file_name))
 
+    url = "https://cloud.appwrite.io/v1/storage/buckets/{}/files/{}/view?project={}".format(result['bucketId'], result["$id"], req.variables.get('APPWRITE_FUNCTION_PROJECT_ID'))
   except Exception as e:
     print(e)
 
-  # https://cloud.appwrite.io/v1/storage/buckets/{647a1723a374f6845b7a -> bucketId}/files/{647a1b7b31971995f10a -> fileId}/view?project={6463a34a73ca03c70d35& -> projectId}
+
+  #url example
+  # https://cloud.appwrite.io/v1/storage/buckets/{647a1723a374f6 -> bucketId}/files/{647a1b7b31a -> fileId}/view?project={6463a34a73c& -> projectId}
   
   return res.json({
     "posts": "ok",
-    "res": result
+    "url": url
   })
+
+def randomString(stringLength=10):
+    """Generate a random string of fixed length """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(stringLength))

@@ -34,20 +34,42 @@ module.exports = async function (req, res) {
       .setSelfSigned(true);
   }
 
+  const DatabaseID = "646a0f5d434c20bf1963";
   try {
     // not check if the APPWRITE_FUNCTION_EVENT_DATA is empty because it only runs when a user is created(user.*.create)
     const userData = JSON.parse(req.variables.APPWRITE_FUNCTION_EVENT_DATA);
     const user = userData.$id;
 
+    // create a collection for the new user
     const promise = database.createCollection(
-      "646a0f5d434c20bf1963",
+      DatabaseID,
       sdk.ID.unique(),
       user
     );
 
     promise.then(
-      function (response) {
+      async function (response) {
         console.log(response);
+
+        // create attributes for the new collection
+        const att1 = database.createUrlAttribute(
+          DatabaseID,
+          response.$id,
+          "txtUrl",
+          false
+        );
+
+        const att2 = database.createIntegerAttribute(
+          DatabaseID,
+          response.$id,
+          "count",
+          false,
+          undefined,
+          undefined,
+          0
+        );
+
+        await Promise.all([att1, att2]);
       },
       function (error) {
         console.log(error);

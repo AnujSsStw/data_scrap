@@ -9,7 +9,7 @@
       "path": "functions/get titles",
       "entrypoint": "src/index.py",
       "ignore": ["__pypackages__"],
-      "execute": [],
+      "execute": ["any"],
       "events": [],
       "schedule": "",
       "timeout": 300

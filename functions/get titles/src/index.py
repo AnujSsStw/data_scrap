@@ -14,12 +14,8 @@ def main(req, res):
                          password=REDDIT_PASSWORD,  # profile password
                          user_agent="sheesh")
 
-    payloads = req.payload or 'No payload provided. Add custom data when executing function.'
-
-    print(type(payloads))
-    # Input validation
     file_url = None
-    print("new new")
+    # payload dict: {q: str, limit: int}
     try:
         payload = json.loads(req.payload)
         file_url = payload['q']
@@ -28,15 +24,13 @@ def main(req, res):
         print(err)
         raise Exception('Payload is invalid.')
 
-    subreddits = reddit.subreddits.search(file_url, limit=10)
+    subreddits = reddit.subreddits.search(file_url, limit=payload['limit'])
 
     reddit_url = []
     for subreddit in subreddits:
-        url: str = "https://www.reddit.com" + subreddit.url
-        reddit_url.append(url)
+        reddit_url.append(subreddit.url)
 
     return res.json({
         "subreddits": reddit_url,
-        "areDevelopersAwesome": True,
-        "payload": payload
     })
+
