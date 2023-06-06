@@ -1,95 +1,78 @@
 {
-    "projectId": "6463a34a73ca03c70d35",
-    "projectName": "test",
-    "functions": [
-        {
-            "$id": "6478a57a1bc6f18145b7",
-            "name": "create user collection",
-            "runtime": "node-16.0",
-            "path": "functions/create user collection",
-            "entrypoint": "src/index.js",
-            "ignore": [
-                "node_modules",
-                ".npm"
-            ],
-            "execute": [],
-            "events": [
-                "users.*.create"
-            ],
-            "schedule": "",
-            "timeout": 30
-        },
-        {
-            "$id": "647a0ce22f8ba5b0dc88",
-            "name": "urls txt",
-            "runtime": "python-3.9",
-            "path": "functions/urls txt",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 300
-        },
-        {
-            "$id": "647c27ecc6e9a01b29a3",
-            "name": "l1",
-            "runtime": "python-3.9",
-            "path": "functions/l1",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 300
-        },
-        {
-            "$id": "647c27fe0d76730d30d2",
-            "name": "l2",
-            "runtime": "node-16.0",
-            "path": "functions/l2",
-            "entrypoint": "src/index.js",
-            "ignore": [
-                "node_modules",
-                ".npm"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 300
-        },
-        {
-            "$id": "647ec5026b8a17bda432",
-            "name": "titles",
-            "runtime": "python-3.9",
-            "path": "functions/titles",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 15
-        },
-        {
-            "$id": "647f102e39555cdac3df",
-            "name": "urlsJson saver",
-            "runtime": "node-16.0",
-            "path": "functions/urlsJson saver",
-            "entrypoint": "src/index.js",
-            "ignore": [
-                "node_modules",
-                ".npm"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 15
-        }
-    ]
+  "projectId": "6463a34a73ca03c70d35",
+  "projectName": "test",
+  "functions": [
+    {
+      "$id": "6478a57a1bc6f18145b7",
+      "name": "create user collection",
+      "runtime": "node-16.0",
+      "path": "functions/create user collection",
+      "entrypoint": "src/index.js",
+      "ignore": ["node_modules", ".npm"],
+      "execute": [],
+      "events": ["users.*.create"],
+      "schedule": "",
+      "timeout": 30
+    },
+    {
+      "$id": "647c27ecc6e9a01b29a3",
+      "name": "l1",
+      "runtime": "python-3.9",
+      "path": "functions/l1",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 300
+    },
+    {
+      "$id": "647c27fe0d76730d30d2",
+      "name": "l2",
+      "runtime": "node-16.0",
+      "path": "functions/l2",
+      "entrypoint": "src/index.js",
+      "ignore": ["node_modules", ".npm"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 300
+    },
+    {
+      "$id": "647ec5026b8a17bda432",
+      "name": "titles",
+      "runtime": "python-3.9",
+      "path": "functions/titles",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 15
+    },
+    {
+      "$id": "647f888eeaa470f6a362",
+      "name": "urlGen S1",
+      "runtime": "python-3.9",
+      "path": "functions/urlGen S1",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 15
+    },
+    {
+      "$id": "647f889c6c907ff58c57",
+      "name": "urlGen S2",
+      "runtime": "node-16.0",
+      "path": "functions/urlGen S2",
+      "entrypoint": "src/index.js",
+      "ignore": ["node_modules", ".npm"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 15
+    }
+  ]
 }
