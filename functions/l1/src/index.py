@@ -52,57 +52,34 @@ def main(req, res):
         user_agent="sheesh",
     )
 
-    # payload type
-    #     my_dict = {
-    #     "reddit": {
-    #       "subreddits": subreddits,
-    #       "data": {
-    #         "image": [],
-    #         "video": [],
-    #         "gif": [],
-    #         "other": [],
-    #       },
-    #     },
-    #     "4chan": {
-    #       "boards": chan4,
-    #       "data": {
-    #         "image": [],
-    #         "video": [],
-    #         "gif": [],
-    #         "other": [],
-    #       },
-    #     },
-    #   }
+    # actual payload
+    {
+        "gen1": {"subreddits": ["wallpapers"], "limit": 10},
+        "gen2": {"boards": ["g", "b", "pol"], "limit": 10},
+    }
 
-    actual_posts_url = []
-    subreddits = None
     try:
         payload = json.loads(req.payload)
-        subreddits = payload["reddit"]["data"]["other"]
+        print(payload)
+        # create execution
+        urlGen1R = functions.create_execution(
+            "647f888eeaa470f6a362", json.dumps(payload["gen1"])
+        )
+        urlGen2C = functions.create_execution(
+            "647f889c6c907ff58c57", json.dumps(payload["gen2"])
+        )
 
-        # extrat the url from payload
-        url1 = payload["reddit"]["data"]["image"]
-        url2 = payload["4chan"]["data"]["image"]
-        actual_posts_url.append(url1)
-        actual_posts_url.append(url2)
-
-        for other in subreddits:
-            if "gallery" in other:
-                print("gallery")
-                submission = reddit.submission(url=other)
-                for image in submission.gallery_data["items"]:
-                    if image["media_id"] == None:
-                        continue
-
-                    media_url = f"https://i.redd.it/{image['media_id']}.jpg"
-                    actual_posts_url.append(media_url)
-
-        print(actual_posts_url)
     except Exception as e:
-        print("error", e)
+        print("error while payload", e)
 
-    # now send the actual_posts_url to the l2 function for downlaoding and uploading to appwrite storage
-    # send the url in batches of 10 to l2 function concurrently
+    actual_posts_url = []
+    try:
+        if urlGen1R["status"] == "completed":
+            actual_posts_url.extend(json.loads(urlGen1R["response"])["urls"]["image"])
+        if urlGen2C["status"] == "completed":
+            actual_posts_url.extend(json.loads(urlGen2C["response"])["urls"]["image"])
+    except Exception as e:
+        print("error while accessing the prop of payload", e)
 
     def send_data_batch(data):
         try:
@@ -110,7 +87,7 @@ def main(req, res):
                 function_id="647c27fe0d76730d30d2", data=data, xasync=True
             )
         except Exception as e:
-            print("error", e)
+            print("error while send data to l2", e)
 
     def send_data_in_batches(data_array, batch_size):
         batches = [
@@ -128,3 +105,15 @@ def main(req, res):
             "areDevelopersAwesome": True,
         }
     )
+
+
+def checkingForGallery(subreddits: list, actual_posts_url: list, reddit: praw.Reddit):
+    for other in subreddits:
+        if "gallery" in other:
+            print("gallery")
+            submission = reddit.submission(url=other)
+            for image in submission.gallery_data["items"]:
+                if image["media_id"] == None:
+                    continue
+                media_url = f"https://i.redd.it/{image['media_id']}.jpg"
+                actual_posts_url.append(media_url)

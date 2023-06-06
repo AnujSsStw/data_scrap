@@ -71,7 +71,7 @@ def main(req, res):
     )
 
     # {
-    #  "subreddits": ["anime", "memes"],
+    #  "subreddits": ["wallpapers"],
     #   "limit": 10,
     # }
     subreddits = None
