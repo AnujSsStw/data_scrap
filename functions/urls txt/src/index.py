@@ -69,8 +69,11 @@ def main(req, res):
     user_agent="sheesh",
   )
 
-  # payload dict: {subreddits: str[], limit: int, userId: str{todo}, fileType: str{todo}}
-
+  # payload dict: {subreddits: str[], 4chan: str[], limit: int, userId: str{todo}, fileType: str{todo}}
+  # {
+  #   "subreddits": ["anime", "memes"],
+  #   "limit": 10,
+  # }
   actual_posts_url = []
   subreddits = None
   try:
