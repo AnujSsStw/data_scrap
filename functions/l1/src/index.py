@@ -36,8 +36,13 @@ def main(req, res):
     functions = Functions(client)
     users = Users(client)
 
-    client.set_endpoint("https://cloud.appwrite.io/v1").set_project("6463a34a73ca03c70d35").set_key(
-        "8e2d4eb0b3a64642fcaa0163302bf185053e28fa015c6c2b654e0f313afa07abd709347fcfbac4584c16bfe00df5760daa3f728ed10f6f042fc900fc41283a2601758c446d5673b987b686ccf951deba9e463d9bfff06a3f9f6e722634b984005f0c5898eb9848c63f16d77ca1d56c2d4dbae51abe6000ea35d16d474d66e64f").set_self_signed(True)
+    client.set_endpoint("https://cloud.appwrite.io/v1").set_project(
+        "6463a34a73ca03c70d35"
+    ).set_key(
+        "8e2d4eb0b3a64642fcaa0163302bf185053e28fa015c6c2b654e0f313afa07abd709347fcfbac4584c16bfe00df5760daa3f728ed10f6f042fc900fc41283a2601758c446d5673b987b686ccf951deba9e463d9bfff06a3f9f6e722634b984005f0c5898eb9848c63f16d77ca1d56c2d4dbae51abe6000ea35d16d474d66e64f"
+    ).set_self_signed(
+        True
+    )
 
     reddit = praw.Reddit(
         client_id=API_CLIENT,  # peronal use script
@@ -47,42 +52,50 @@ def main(req, res):
         user_agent="sheesh",
     )
 
-    # { 
-    #     "subreddits": ["memes", "dankmemes"],
-    #     "limit": 10
-    # }
-    # payload dict: {subreddits: str[], limit: int, userId: str{todo}, fileType: str{todo}}
+    # payload type
+    #     my_dict = {
+    #     "reddit": {
+    #       "subreddits": subreddits,
+    #       "data": {
+    #         "image": [],
+    #         "video": [],
+    #         "gif": [],
+    #         "other": [],
+    #       },
+    #     },
+    #     "4chan": {
+    #       "boards": chan4,
+    #       "data": {
+    #         "image": [],
+    #         "video": [],
+    #         "gif": [],
+    #         "other": [],
+    #       },
+    #     },
+    #   }
+
     actual_posts_url = []
     subreddits = None
     try:
         payload = json.loads(req.payload)
-        subreddits = payload['subreddits']
+        subreddits = payload["reddit"]["data"]["other"]
 
-        for subreddit in subreddits:
-            posts = reddit.subreddit(subreddit).hot(limit=payload['limit'])
-            for post in posts:
-                if (post.url[-3:] == "jpg" or post.url[-3:] == "png" or post.url[-3:] == "gif"):
-                    print("jpg/png/gif")
-                    actual_posts_url.append(post.url)
+        # extrat the url from payload
+        url1 = payload["reddit"]["data"]["image"]
+        url2 = payload["4chan"]["data"]["image"]
+        actual_posts_url.append(url1)
+        actual_posts_url.append(url2)
 
-                elif ("gallery" in post.url):
-                    print("gallery")
-                    submission = reddit.submission(url=post.url)
-                    for image in submission.gallery_data['items']:
-                        if (image['media_id'] == None):
-                            continue
+        for other in subreddits:
+            if "gallery" in other:
+                print("gallery")
+                submission = reddit.submission(url=other)
+                for image in submission.gallery_data["items"]:
+                    if image["media_id"] == None:
+                        continue
 
-                        media_url = f"https://i.redd.it/{image['media_id']}.jpg"
-                        actual_posts_url.append(media_url)
-
-                # probably not needed
-                elif (post.url[-3:] == "gifv"):
-                    print("gifv")
-                    actual_posts_url.append(post.url[:-1])
-
-                else:
-                    print("not image")
-                    print(post.url)
+                    media_url = f"https://i.redd.it/{image['media_id']}.jpg"
+                    actual_posts_url.append(media_url)
 
         print(actual_posts_url)
     except Exception as e:
@@ -93,20 +106,25 @@ def main(req, res):
 
     def send_data_batch(data):
         try:
-           functions.create_execution(
-            function_id="647c27fe0d76730d30d2", data=data, xasync=True)
+            functions.create_execution(
+                function_id="647c27fe0d76730d30d2", data=data, xasync=True
+            )
         except Exception as e:
             print("error", e)
 
     def send_data_in_batches(data_array, batch_size):
-        batches = [data_array[i:i + batch_size]
-                   for i in range(0, len(data_array), batch_size)]
+        batches = [
+            data_array[i : i + batch_size]
+            for i in range(0, len(data_array), batch_size)
+        ]
         for batch in batches:
             batch = json.dumps(batch)
             send_data_batch(batch)
 
     send_data_in_batches(actual_posts_url, 10)
 
-    return res.json({
-        "areDevelopersAwesome": True,
-    })
+    return res.json(
+        {
+            "areDevelopersAwesome": True,
+        }
+    )
