@@ -95,7 +95,9 @@ def main(req, res):
             for i in range(0, len(data_array), batch_size)
         ]
         for batch in batches:
-            batch = json.dumps(batch)
+            batch = json.dumps(
+                {"urls": {"image": batch}, "bucketId": payload["gen1"]["subreddits"][0]}
+            )
             send_data_batch(batch)
 
     send_data_in_batches(actual_posts_url, 10)
