@@ -1,12 +1,15 @@
 from appwrite.client import Client
 import praw
 import json
+import time
 
 # You can remove imports of services you don't use
 from appwrite.services.account import Account
-from appwrite.services.databases import Databases
+from appwrite.services.storage import Storage
 from appwrite.services.functions import Functions
 from appwrite.services.users import Users
+from appwrite.permission import Permission
+from appwrite.role import Role
 
 """
   'req' variable has:
@@ -32,7 +35,7 @@ def main(req, res):
 
     # You can remove services you don't use
     account = Account(client)
-    database = Databases(client)
+    storage = Storage(client)
     functions = Functions(client)
     users = Users(client)
 
@@ -90,6 +93,24 @@ def main(req, res):
             print("error while send data to l2", e)
 
     def send_data_in_batches(data_array, batch_size):
+        # check if the bucket exists
+        try:
+            result = storage.get_bucket(payload["gen1"]["subreddits"][0])
+            print("bucket found", result)
+        except Exception as e:
+            print("bucket not found", e)
+            # create bucket
+            result = storage.create_bucket(
+                payload["gen1"]["subreddits"][0],
+                payload["gen1"]["subreddits"][0],
+                [
+                    Permission.create(Role.any()),
+                    Permission.read(Role.any()),
+                    Permission.write(Role.any()),
+                ],
+            )
+            print("bucket created", result)
+
         batches = [
             data_array[i : i + batch_size]
             for i in range(0, len(data_array), batch_size)
@@ -99,6 +120,8 @@ def main(req, res):
                 {"urls": {"image": batch}, "bucketId": payload["gen1"]["subreddits"][0]}
             )
             send_data_batch(batch)
+            # make sleep for 1 sec
+            time.sleep(3)
 
     send_data_in_batches(actual_posts_url, 10)
 
