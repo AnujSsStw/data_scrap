@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { UserContext } from "~/context";
 import { useMemo, useState } from "react";
 import { Models } from "appwrite";
+import { Provider as JotaiProvider } from "jotai";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const router = useRouter();
@@ -18,7 +19,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     <ChakraProvider>
       <UserContext.Provider value={providerValue}>
         {router.pathname == "/error" ? "" : <WithSubnavigation />}
-        <Component {...pageProps} />
+        <JotaiProvider>
+          <Component {...pageProps} />
+        </JotaiProvider>
       </UserContext.Provider>
     </ChakraProvider>
   );

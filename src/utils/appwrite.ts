@@ -8,7 +8,7 @@ import {
   Storage,
 } from "appwrite";
 
-const client = new Client()
+export const client = new Client()
   .setEndpoint("https://cloud.appwrite.io/v1") // Your API Endpoint
   .setProject(process.env.NEXT_PUBLIC_PROJECT_ID as string); // Your project ID
 

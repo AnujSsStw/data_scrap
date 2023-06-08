@@ -2,16 +2,18 @@ import { Models, Query } from "appwrite";
 import { useCallback, useState } from "react";
 import { storage } from "~/utils/appwrite";
 import JSZip from "jszip";
+import { atom, useAtom } from "jotai";
+import { createdBucketId } from "./options";
 
+const bukID = atom((get) => get(createdBucketId));
 const Dpp = () => {
   const [data, setData] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
-  // should you use useCallback or useMemo
+  const [bucketId] = useAtom(bukID);
+  // const bucketId = "meme";
 
   const handleClick = async () => {
-    const promise = storage.listFiles("647a67c994ffd21e0787", [
-      Query.limit(100),
-    ]);
+    const promise = storage.listFiles(bucketId, [Query.limit(100)]);
     const d: any = [];
     promise.then(
       function (response) {
@@ -35,7 +37,7 @@ const Dpp = () => {
       let filesDownloaded = 0;
 
       const res = data.map(async (fileId) => {
-        const result = storage.getFileDownload("647a67c994ffd21e0787", fileId);
+        const result = storage.getFileDownload(bucketId, fileId);
         const response = await fetch(result.toString());
         const fileData = await response.blob();
         zip.file(fileId, fileData, { base64: true });

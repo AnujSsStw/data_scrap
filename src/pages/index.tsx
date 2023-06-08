@@ -1,3 +1,4 @@
+import { atom, useAtom } from "jotai";
 import { PhoneIcon, Search2Icon } from "@chakra-ui/icons";
 import {
   InputGroup,
@@ -17,13 +18,21 @@ import { UserContext } from "~/context";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
+export const payload = atom({
+  chan_4: [],
+  subreddits: [],
+});
+
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
   // const createCollection = api.appwrite.createCollection.useMutation();
 
   const [topic, setTopic] = useState<string>("");
-  const [data, setData] = useState<any[]>([]);
-  const [selected, setSelected] = useState<any[]>([]);
+  const [data, setData] = useState({
+    chan_4: [],
+    subreddits: [],
+  });
+  const [selected, setSelected] = useAtom(payload);
 
   const router = useRouter();
   // const { user } = useContext(UserContext);
@@ -46,9 +55,9 @@ const Home: NextPage = () => {
 
   const handleSearch = async () => {
     try {
-      const payload = JSON.stringify({ q: topic });
+      const payload = JSON.stringify({ q: topic, limit: 10 });
       const { response } = await mutation.mutateAsync({
-        functionId: "64763af50eff7902e26b",
+        functionId: "647ec5026b8a17bda432",
         payload,
       });
 
@@ -57,8 +66,12 @@ const Home: NextPage = () => {
       //   payload
       // );
 
-      const a = JSON.parse(response).subreddits;
-      setData(a);
+      const a = JSON.parse(response);
+      console.log(a);
+      setData({
+        chan_4: a.chan_4,
+        subreddits: a.subreddits,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -93,7 +106,6 @@ const Home: NextPage = () => {
         <Link
           href={{
             pathname: "/options",
-            query: { selected: selected },
           }}
         >
           <Box
@@ -111,38 +123,100 @@ const Home: NextPage = () => {
           display={"flex"}
           flexDirection={"column"}
         >
-          {data.length > 0 &&
-            data.map((item, idx) => {
-              return (
-                //  i want a list here
+          {data.chan_4.map((item, idx) => {
+            return (
+              <Box
+                key={idx}
+                p={5}
+                shadow="md"
+                borderWidth="1px"
+                // flex="1"
+                borderRadius="md"
+                m={"2"}
+                bg={selected.chan_4.includes(item) ? "green.100" : ""}
+              >
                 <Box
-                  key={idx}
-                  p={5}
-                  shadow="md"
-                  borderWidth="1px"
-                  // flex="1"
-                  borderRadius="md"
-                  m={"2"}
-                  bg={selected.includes(item) ? "green.100" : ""}
+                  onClick={() => {
+                    // add the current item to setSelected
+                    setSelected((prev) => {
+                      return {
+                        ...prev,
+                        chan_4: [...prev.chan_4, item],
+                      };
+                    });
+                  }}
+                  _hover={{ cursor: "pointer" }}
                 >
-                  <Box
-                    onClick={() => {
-                      setSelected([...selected, item]);
-                    }}
-                    _hover={{ cursor: "pointer" }}
-                  >
-                    Select
-                  </Box>
-                  <Link href={item}>
-                    <div>{item}</div>
-                  </Link>
+                  Select 4chan borads
                 </Box>
-              );
-            })}
+                <Link href={item}>
+                  <div>{item}</div>
+                </Link>
+              </Box>
+            );
+          })}
+          {data.subreddits.map((item, idx) => {
+            return (
+              <Box
+                key={idx}
+                p={5}
+                shadow="md"
+                borderWidth="1px"
+                // flex="1"
+                borderRadius="md"
+                m={"2"}
+                bg={selected.subreddits.includes(item) ? "green.100" : ""}
+              >
+                <Box
+                  onClick={() => {
+                    setSelected((prev) => {
+                      return {
+                        ...prev,
+                        subreddits: [...prev.subreddits, item],
+                      };
+                    });
+                  }}
+                  _hover={{ cursor: "pointer" }}
+                >
+                  Select subreddits
+                </Box>
+                <Link href={item}>
+                  <div>{item}</div>
+                </Link>
+              </Box>
+            );
+          })}
         </Box>
       </main>
     </>
   );
 };
+`
+return (
+  <Box
+    key={idx}
+    p={5}
+    shadow="md"
+    borderWidth="1px"
+    // flex="1"
+    borderRadius="md"
+    m={"2"}
+    bg={selected.includes(item) ? "green.100" : ""}
+  >
+    <Box
+      onClick={() => {
+        setSelected([...selected, item]);
+      }}
+      _hover={{ cursor: "pointer" }}
+    >
+      Select
+    </Box>
+    <Link href={item}>
+      <div>{item}</div>
+    </Link>
+  </Box>
+);
+
+`;
 
 export default Home;
