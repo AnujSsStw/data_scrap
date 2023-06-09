@@ -9,23 +9,37 @@ def main(req, res):
         import snscrape.modules.twitter as twitter
         import snscrape as ss
 
-        {
-            "query": "anime",
-            "limit": 10,
-        }
+        {"query": "anime", "limit": 10, "fromL1": True | False}
         payload = json.loads(req.payload)
         print(payload)
 
+        allT = twitter.TwitterSearchScraper(
+            query=f"#{payload['query']}",
+            mode=ss.modules.twitter.TwitterSearchScraperMode.TOP,
+        ).get_items()
+
         tweets = []
-        for i, tweet in enumerate(
-            twitter.TwitterSearchScraper(
-                query=f"#{payload['query']}",
-                mode=ss.modules.twitter.TwitterSearchScraperMode.TOP,
-            ).get_items()
-        ):
-            if i > payload["limit"]:
-                break
-            tweets.append([tweet.user.username, tweet.content, tweet.media])
+        if payload["fromL1"]:
+            for i, tweet in enumerate(allT):
+                if i > payload["limit"]:
+                    break
+                tweets.append(
+                    [
+                        tweet.user.username,
+                        tweet.content,
+                        tweet.media,
+                    ]
+                )
+        else:
+            for i, tweet in enumerate(allT):
+                if i > 9:
+                    break
+                tweets.append(
+                    [
+                        tweet.content,
+                        tweet.media[0] if tweet.media else None,
+                    ]
+                )
 
         print(tweets)
 
