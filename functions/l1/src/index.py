@@ -108,6 +108,8 @@ def main(req, res):
                     Permission.read(Role.any()),
                     Permission.write(Role.any()),
                 ],
+                None,
+                True,
             )
             print("bucket created", result)
 
