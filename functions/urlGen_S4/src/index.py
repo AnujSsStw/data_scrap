@@ -35,10 +35,10 @@ def main(req, res):
                 if i > 9:
                     break
                 tweets.append(
-                    [
-                        tweet.content,
-                        tweet.media[0] if tweet.media else None,
-                    ]
+                    {
+                        "content": tweet.content,
+                        "media": tweet.media[0] if tweet.media else None,
+                    }
                 )
 
         print(tweets)

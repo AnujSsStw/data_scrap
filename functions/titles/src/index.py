@@ -70,7 +70,9 @@ def main(req, res):
 
     sub_reddit = []
     for subreddit in subreddits:
-        sub_reddit.append([subreddit.url, subreddit.public_description])
+        sub_reddit.append(
+            {"subreddit": subreddit.url, "description": subreddit.public_description}
+        )
 
     # 4chan
     headers = {
@@ -87,11 +89,14 @@ def main(req, res):
 
         for board in boards:
             if board["title"] == query or query in board["meta_description"]:
-                chan_4.append(board["board"])
+                chan_4.append({"board": board["board"], "title": board["title"]})
 
-            for reddit in sub_reddit:
-                if reddit in board["meta_description"] or reddit in board["title"]:
-                    chan_4.append(board["board"])
+            for my_dict in sub_reddit:
+                for value in my_dict.values():
+                    if board["meta_description"] in value or board["title"] in value:
+                        chan_4.append(
+                            {"board": board["board"], "title": board["title"]}
+                        )
 
     except Exception as err:
         print(err)

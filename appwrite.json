@@ -45,10 +45,10 @@
       "path": "functions/titles",
       "entrypoint": "src/index.py",
       "ignore": ["__pypackages__"],
-      "execute": [],
+      "execute": ["users"],
       "events": [],
       "schedule": "",
-      "timeout": 15
+      "timeout": 30
     },
     {
       "$id": "647f888eeaa470f6a362",

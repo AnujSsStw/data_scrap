@@ -13,17 +13,9 @@ export const UserContext = createContext<UserContext>({
   setUser: () => {},
 });
 
-// type data = {
-//   limit: number;
-// };
-
-// interface PreferencesContext {
-//   data: data;
-//   setData: Dispatch<
-//     SetStateAction<Models.User<Models.Preferences> | undefined>
-//   >;
-// }
-// export const PreferencesContext = createContext<PreferencesContext>({
-//   data: {},
-// });
-export const uu = atom<Models.User<Models.Preferences> | undefined>(undefined);
+export const payloadForL1 = atom({
+  chan_4: [],
+  subreddits: [],
+  pinterest: [],
+  twitter: [],
+});

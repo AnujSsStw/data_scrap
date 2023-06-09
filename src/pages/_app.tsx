@@ -8,6 +8,7 @@ import { UserContext } from "~/context";
 import { useMemo, useState } from "react";
 import { Models } from "appwrite";
 import { Provider as JotaiProvider } from "jotai";
+import Head from "next/head";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const router = useRouter();
@@ -16,14 +17,24 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   const providerValue = useMemo(() => ({ user, setUser }), [user, setUser]);
 
   return (
-    <ChakraProvider>
-      <UserContext.Provider value={providerValue}>
-        {router.pathname == "/error" ? "" : <WithSubnavigation />}
-        <JotaiProvider>
-          <Component {...pageProps} />
-        </JotaiProvider>
-      </UserContext.Provider>
-    </ChakraProvider>
+    <>
+      <Head>
+        <title>Data Scrapper</title>
+        <meta
+          name="description"
+          content="site to generate data on a certain topic"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <ChakraProvider>
+        <UserContext.Provider value={providerValue}>
+          {router.pathname == "/error" ? "" : <WithSubnavigation />}
+          <JotaiProvider>
+            <Component {...pageProps} />
+          </JotaiProvider>
+        </UserContext.Provider>
+      </ChakraProvider>
+    </>
   );
 };
 

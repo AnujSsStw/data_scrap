@@ -48,6 +48,7 @@ export function WithSubnavigation() {
       })
       .catch((error) => {
         setHasUser(false);
+        localStorage.removeItem("jwt");
         console.log(error);
       });
   }, []);
@@ -57,15 +58,23 @@ export function WithSubnavigation() {
     if (hasUser && !isPresent) {
       account
         .createJWT()
-        .then((response) => {
+        .then(async (response) => {
           console.log(response);
-          window.localStorage.setItem("jwt", response.jwt);
+          localStorage.setItem("jwt", response.jwt);
+
+          await fetch("/api/setJwt", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ jwt: response.jwt }),
+          });
         })
         .catch((error) => {
           console.log(error);
         });
     }
-  }, []);
+  }, [hasUser]);
 
   return (
     <Box>
