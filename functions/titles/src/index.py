@@ -2,13 +2,9 @@ from appwrite.client import Client
 
 # You can remove imports of services you don't use
 from appwrite.services.account import Account
-from appwrite.services.avatars import Avatars
 from appwrite.services.databases import Databases
 from appwrite.services.functions import Functions
-from appwrite.services.health import Health
-from appwrite.services.locale import Locale
 from appwrite.services.storage import Storage
-from appwrite.services.teams import Teams
 from appwrite.services.users import Users
 
 import praw
@@ -34,26 +30,17 @@ def main(req, res):
 
     # You can remove services you don't use
     account = Account(client)
-    avatars = Avatars(client)
-    database = Databases(client)
-    functions = Functions(client)
-    health = Health(client)
-    locale = Locale(client)
     storage = Storage(client)
-    teams = Teams(client)
+    functions = Functions(client)
     users = Users(client)
 
-    if not req.variables.get("APPWRITE_FUNCTION_ENDPOINT") or not req.variables.get(
-        "APPWRITE_FUNCTION_API_KEY"
-    ):
-        print("Environment variables are not set. Function cannot use Appwrite SDK.")
-    else:
-        (
-            client.set_endpoint(req.variables.get("APPWRITE_FUNCTION_ENDPOINT", None))
-            .set_project(req.variables.get("APPWRITE_FUNCTION_PROJECT_ID", None))
-            .set_key(req.variables.get("APPWRITE_FUNCTION_API_KEY", None))
-            .set_self_signed(True)
-        )
+    client.set_endpoint("https://cloud.appwrite.io/v1").set_project(
+        "6463a34a73ca03c70d35"
+    ).set_key(
+        "8e2d4eb0b3a64642fcaa0163302bf185053e28fa015c6c2b654e0f313afa07abd709347fcfbac4584c16bfe00df5760daa3f728ed10f6f042fc900fc41283a2601758c446d5673b987b686ccf951deba9e463d9bfff06a3f9f6e722634b984005f0c5898eb9848c63f16d77ca1d56c2d4dbae51abe6000ea35d16d474d66e64f"
+    ).set_self_signed(
+        True
+    )
 
     API_CLIENT = "DIh7RjYEWFD7owiTja0OGQ"
     API_SECRET = "KG8WVc51LIojuSdYDfPZAQRc0EzErA"
@@ -70,10 +57,7 @@ def main(req, res):
 
     query = None
     # payload dict: {q: str, limit: int}
-    # {
-    # "q": "anime",
-    # "limit": 10
-    # }
+    # {"q": "anime", "limit": 10}
     try:
         payload = json.loads(req.payload)
         query = payload["q"]
@@ -86,7 +70,7 @@ def main(req, res):
 
     sub_reddit = []
     for subreddit in subreddits:
-        sub_reddit.append(subreddit.url)
+        sub_reddit.append([subreddit.url, subreddit.public_description])
 
     # 4chan
     headers = {
@@ -112,4 +96,27 @@ def main(req, res):
     except Exception as err:
         print(err)
 
-    return res.json({"subreddits": sub_reddit, "chan_4": chan_4})
+    # for pinterest
+    pinterest = []
+    try:
+        pinterest.append(f"https://www.pinterest.com/search/pins/?q={query}")
+    except Exception as e:
+        print("for pinterest: ", e)
+
+    # for twitter
+    try:
+        p = {"query": query, "limit": 10, "fromL1": False}
+        urlGen_S4 = functions.create_execution("64821f7fee991ae03baf", json.dumps(p))
+        if urlGen_S4["status"] == "completed":
+            twitter = json.loads(urlGen_S4["response"])["urls"]
+    except Exception as e:
+        print("twitter exc: ", e)
+
+    return res.json(
+        {
+            "subreddits": sub_reddit,
+            "chan_4": chan_4,
+            "pinterest": pinterest,
+            "twitter": twitter,
+        }
+    )
