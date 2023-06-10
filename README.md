@@ -1,28 +1,63 @@
-# Create T3 App
+![Cover](public/favicon.ico)
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+# ⚒️ DataScraperX 1000 😶‍🌫️
 
-## What's next? How do I make an app with this?
+> Get data in minutes, not hours! or what ever your internet speed is.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 🧰 Tech Stack
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- [Appwrite](https://appwrite.io/)
+- [CreateT3](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Chakra UI](https://chakra-ui.com/)
+- [jszip](https://stuk.github.io/jszip/)
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Features 🪄
 
-## Learn More
+### Data Storage and Export
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+Facilities to store scraped data in a structured format such as CSV, JSON, or a database. Additionally, the ability to export the data for further analysis or integration with other systems.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### User-Friendly Interface
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Web-based interface allows users to set up scraping tasks, monitor progress, view extracted data, and configure scraping settings easily.
 
-## How do I deploy this?
+### No-Code Scraper 🔨
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+No more coding complexities! DataScraperX 1000 allows you to get the data you need without writing a single line of code. Simply select the data you want to scrape, and our tool will do the rest for you. It's that easy!
+
+### Acknowledging the Creator 🙏
+
+Clearly attribute the creation of the data scraping website to the original creator or development team. This is done by adding a link to the original website in the footer of every data that is scraped.
+
+## 🔮 Future Plans
+
+- Nicer delete confirmation modal
+- Improve UI
+- More providers as well as More Data Types (e.g. Video, Sentiment Analysis, Audio, etc.)
+- More caching
+
+## Installation
+
+To get started with DataScraperX 1000, follow these simple steps:
+
+1. Clone the repository:
+
+   ```shell
+   git clone https://github.com/AnujSsStw/data_scrap.git
+   cd data_scrap
+   ```
+
+2. Install the dependencies:
+
+   ```shell
+   pnpm install
+   ```
+
+3. Start the development server:
+
+   ```shell
+   pnpm dev
+   ```
+
+4. Open your browser and navigate to `http://localhost:3000` to access DataScraperX 1000.
