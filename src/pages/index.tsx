@@ -12,7 +12,7 @@ import { type NextPage } from "next";
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { functions } from "~/utils/appwrite";
-import { useContext, useState } from "react";
+import { Key, useContext, useState } from "react";
 import { UserContext, payloadForL1 } from "~/context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -23,7 +23,7 @@ const Home: NextPage = () => {
   // const createCollection = api.appwrite.createCollection.useMutation();
 
   const [topic, setTopic] = useState<string>("");
-  const [data, setData] = useState({
+  const [data, setData] = useState<any>({
     chan_4: [],
     subreddits: [],
     pinterest: [],
@@ -123,30 +123,44 @@ const Home: NextPage = () => {
           flexWrap={"wrap"}
           flexDirection={"row"}
         >
-          {data.chan_4.map((item, idx) => {
-            return (
-              <CardBox
-                title={item.board}
-                discription={item.title}
-                key={idx}
-                source="chan_4"
-              />
-            );
-          })}
-          {data.subreddits.map((item, idx) => {
-            return (
-              <CardBox
-                title={item.subreddit}
-                discription={item.description}
-                key={idx}
-                source="subreddits"
-              />
-            );
-          })}
-          {data.twitter.map((item, idx) => {
-            return <CardBox title={item.content} key={idx} source="twitter" />;
-          })}
-          {data.pinterest.map((item, idx) => {
+          {data.chan_4.map(
+            (
+              item: { board: string; title: string | undefined },
+              idx: Key | null | undefined
+            ) => {
+              return (
+                <CardBox
+                  title={item.board}
+                  discription={item.title}
+                  key={idx}
+                  source="chan_4"
+                />
+              );
+            }
+          )}
+          {data.subreddits.map(
+            (
+              item: { subreddit: string; description: string | undefined },
+              idx: Key | null | undefined
+            ) => {
+              return (
+                <CardBox
+                  title={item.subreddit}
+                  discription={item.description}
+                  key={idx}
+                  source="subreddits"
+                />
+              );
+            }
+          )}
+          {data.twitter.map(
+            (item: { content: string }, idx: Key | null | undefined) => {
+              return (
+                <CardBox title={item.content} key={idx} source="twitter" />
+              );
+            }
+          )}
+          {data.pinterest.map((item: string, idx: Key | null | undefined) => {
             return <CardBox title={item} key={idx} source="pinterest" />;
           })}
         </Box>
