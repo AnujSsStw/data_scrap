@@ -59,12 +59,19 @@ def main(req, res):
     {
         "gen1": {"subreddits": ["wallpapers"], "limit": 10},
         "gen2": {"boards": ["g", "b", "pol"], "limit": 10},
+        "gen3": {"pin": "wallpaper"},
+        "gen4": {"query": "wallpaper", "limit": 10, "fromL1": True | False},
     }
 
     try:
         payload = json.loads(req.payload)
         print(payload)
         # create execution
+        if len(payload["gen1"]["subreddits"]) > 0:
+            urlGen1R = functions.create_execution(
+                "647f888eeaa470f6a362", json.dumps(payload["gen1"])
+            )
+
         urlGen1R = functions.create_execution(
             "647f888eeaa470f6a362", json.dumps(payload["gen1"])
         )
@@ -122,14 +129,20 @@ def main(req, res):
                 {"urls": {"image": batch}, "bucketId": payload["gen1"]["subreddits"][0]}
             )
             send_data_batch(batch)
-            # make sleep for 1 sec
+            # make sleep for 3 sec
             time.sleep(3)
 
     send_data_in_batches(actual_posts_url, 10)
 
+    preview_data = []
+    for i, url in enumerate(actual_posts_url):
+        if i > 10:
+            break
+        preview_data.append(url)
+
     return res.json(
         {
-            "areDevelopersAwesome": True,
+            "preview data": preview_data,
         }
     )
 
