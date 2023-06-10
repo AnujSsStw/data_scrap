@@ -2,6 +2,8 @@ from appwrite.client import Client
 import praw
 import json
 import time
+import concurrent.futures
+import threading
 
 # You can remove imports of services you don't use
 from appwrite.services.account import Account
@@ -28,6 +30,10 @@ API_CLIENT = "DIh7RjYEWFD7owiTja0OGQ"
 API_SECRET = "KG8WVc51LIojuSdYDfPZAQRc0EzErA"
 REDDIT_USERNAME = "AnujSsSs"
 REDDIT_PASSWORD = "6TY@6_Pu6h8-tmw"
+
+# Global list
+actual_posts_url = []
+lock = threading.Lock()
 
 
 def main(req, res):
@@ -67,36 +73,26 @@ def main(req, res):
         payload = json.loads(req.payload)
         print(payload)
         # create execution
-        if len(payload["gen1"]["subreddits"]) > 0:
-            urlGen1R = functions.create_execution(
-                "647f888eeaa470f6a362", json.dumps(payload["gen1"])
-            )
 
-        if len(payload["gen2"]["boards"]) > 0:
-            urlGen2C = functions.create_execution(
-                "647f889c6c907ff58c57", json.dumps(payload["gen2"])
-            )
+        # Execute functions in parallel
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Submit function 1
+            future1 = executor.submit(gen1, payload, functions)
 
-        if len(payload["gen3"]["pin"]) > 0:
-            urlGen3P = functions.create_execution(
-                "6482166f1f68d02a3570", json.dumps(payload["gen3"])
-            )
+            # Submit function 2
+            future2 = executor.submit(gen2, payload, functions)
 
-        if len(payload["gen4"]["query"]) > 0:
-            urlGen4T = functions.create_execution(
-                "64821f7fee991ae03baf", json.dumps(payload["gen4"])
-            )
+            # Submit function 2
+            future3 = executor.submit(gen3, payload, functions)
+
+            # Submit function 2
+            future4 = executor.submit(gen4, payload, functions)
+
+            # Wait for both futures to complete
+            concurrent.futures.wait([future1, future2, future3, future4])
+
     except Exception as e:
         print("error while payload or gen execution", e)
-
-    actual_posts_url = []
-    try:
-        if urlGen1R["status"] == "completed":
-            actual_posts_url.extend(json.loads(urlGen1R["response"])["urls"]["image"])
-        if urlGen2C["status"] == "completed":
-            actual_posts_url.extend(json.loads(urlGen2C["response"])["urls"]["image"])
-    except Exception as e:
-        print("error while accessing the prop of payload", e)
 
     def send_data_batch(data):
         try:
@@ -164,3 +160,47 @@ def checkingForGallery(subreddits: list, actual_posts_url: list, reddit: praw.Re
                     continue
                 media_url = f"https://i.redd.it/{image['media_id']}.jpg"
                 actual_posts_url.append(media_url)
+
+
+def gen1(payload: dict, functions: Functions):
+    if len(payload["gen1"]["subreddits"]) > 0:
+        urlGen1R = functions.create_execution(
+            "647f888eeaa470f6a362", json.dumps(payload["gen1"])
+        )
+        if urlGen1R["status"] == "completed":
+            with lock:
+                actual_posts_url.extend(
+                    json.loads(urlGen1R["response"])["urls"]["image"]
+                )
+
+
+def gen2(payload: dict, functions: Functions):
+    if len(payload["gen2"]["boards"]) > 0:
+        urlGen2C = functions.create_execution(
+            "647f889c6c907ff58c57", json.dumps(payload["gen2"])
+        )
+        if urlGen2C["status"] == "completed":
+            with lock:
+                actual_posts_url.extend(
+                    json.loads(urlGen2C["response"])["urls"]["image"]
+                )
+
+
+def gen3(payload: dict, functions: Functions):
+    if len(payload["gen3"]["pin"]) > 0:
+        urlGen3P = functions.create_execution(
+            "6482166f1f68d02a3570", json.dumps(payload["gen3"])
+        )
+        if urlGen3P["status"] == "completed":
+            with lock:
+                actual_posts_url.extend(json.loads(urlGen3P["response"])["urls"])
+
+
+def gen4(payload: dict, functions: Functions):
+    if len(payload["gen4"]["query"]) > 0:
+        urlGen4T = functions.create_execution(
+            "64821f7fee991ae03baf", json.dumps(payload["gen4"])
+        )
+        if urlGen4T["status"] == "completed":
+            with lock:
+                actual_posts_url.extend(json.loads(urlGen4T["response"])["urls"])
