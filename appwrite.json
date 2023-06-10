@@ -21,7 +21,7 @@
       "path": "functions/l1",
       "entrypoint": "src/index.py",
       "ignore": ["__pypackages__"],
-      "execute": [],
+      "execute": ["users"],
       "events": [],
       "schedule": "",
       "timeout": 300
