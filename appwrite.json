@@ -3,18 +3,6 @@
   "projectName": "test",
   "functions": [
     {
-      "$id": "6478a57a1bc6f18145b7",
-      "name": "create user collection",
-      "runtime": "node-16.0",
-      "path": "functions/create user collection",
-      "entrypoint": "src/index.js",
-      "ignore": ["node_modules", ".npm"],
-      "execute": [],
-      "events": ["users.*.create"],
-      "schedule": "",
-      "timeout": 30
-    },
-    {
       "$id": "647c27ecc6e9a01b29a3",
       "name": "l1",
       "runtime": "python-3.9",

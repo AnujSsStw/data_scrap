@@ -58,12 +58,18 @@ def main(req, res):
     )
 
     # actual payload
-    {
-        "gen1": {"subreddits": ["wallpapers"], "limit": 10},
-        "gen2": {"boards": ["g", "b", "pol"], "limit": 10},
-        "gen3": {"pin": "wallpaper"},
-        "gen4": {"query": "wallpaper", "limit": 10, "fromL1": True | False},
-    }
+    # {
+    #     "gen1": {"subreddits": ["wallpapers"], "limit": 10},
+    #     "gen2": {"boards": ["g", "b", "pol"], "limit": 10},
+    #     "gen3": {"pin": "wallpaper", "limit": 10},
+    #     "gen4": {
+    #         "query": "wallpaper",
+    #         "limit": 10,
+    #         "fromL1": True | False,
+    #         "dataType": "csv" | "json" | "raw",
+    #     },
+    #     "q": "wallpaper",
+    # }
 
     actual_posts_url = None
     try:
@@ -108,22 +114,28 @@ def main(req, res):
 
     def send_data_in_batches(data_array, batch_size):
         # check if the bucket exists
+        bucket_Id = None
+        if len(payload["gen1"]["subreddits"]) > 0:
+            bucket_Id = payload["gen1"]["subreddits"][0]
+        else:
+            bucket_Id = payload["q"]
+
         try:
-            result = storage.get_bucket(payload["gen1"]["subreddits"][0])
+            result = storage.get_bucket(bucket_id=bucket_Id)
             print("bucket found", result)
         except Exception as e:
             print("bucket not found", e)
             # create bucket
             result = storage.create_bucket(
-                payload["gen1"]["subreddits"][0],
-                payload["gen1"]["subreddits"][0],
-                [
+                bucket_id=bucket_Id,
+                name=bucket_Id,
+                permissions=[
                     Permission.create(Role.any()),
                     Permission.read(Role.any()),
                     Permission.write(Role.any()),
                 ],
-                None,
-                True,
+                file_security=None,
+                enabled=True,
             )
             print("bucket created", result)
 
@@ -133,7 +145,10 @@ def main(req, res):
         ]
         for batch in batches:
             batch = json.dumps(
-                {"urls": {"image": batch}, "bucketId": payload["gen1"]["subreddits"][0]}
+                {
+                    "urls": {"image": batch},
+                    "bucketId": bucket_Id,
+                }
             )
             send_data_batch(batch)
             # make sleep for 3 sec
@@ -145,7 +160,8 @@ def main(req, res):
     for i, url in enumerate(actual_posts_url):
         if i > 10:
             break
-        preview_data.append(url)
+        if url.endswith(".jpg") or url.endswith(".png"):
+            preview_data.append(url)
 
     return res.json(
         {

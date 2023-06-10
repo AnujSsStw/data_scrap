@@ -96,11 +96,29 @@ def redditBuilder(subreddits: list, reddit: praw.Reddit, limit: int):
     }
 
     for subreddit in subreddits:
+        # if the limit is high then add other postType
         postsHot = reddit.subreddit(subreddit).hot(limit=limit)
-        postsNew = reddit.subreddit(subreddit).new(limit=limit)
-        postsRising = reddit.subreddit(subreddit).rising(limit=limit)
-        postsControversial = reddit.subreddit(subreddit).controversial(limit=limit)
-        postsTop = reddit.subreddit(subreddit).top(limit=limit)
+
+        postsNew, postsControversial, postsRising, postsTop = None, None, None, None
+
+        if limit > 1000:
+            postsNew = reddit.subreddit(subreddit).new(limit=limit)
+        if limit > 2000:
+            postsRising = reddit.subreddit(subreddit).rising(limit=limit)
+        if limit > 3000:
+            postsControversial = reddit.subreddit(subreddit).controversial(limit=limit)
+        if limit > 5000:
+            postsTop = reddit.subreddit(subreddit).top(limit=limit)
+
+        # Check if the variables are None and reassign empty lists if necessary
+        if postsNew is None:
+            postsNew = []
+        if postsControversial is None:
+            postsControversial = []
+        if postsRising is None:
+            postsRising = []
+        if postsTop is None:
+            postsTop = []
 
         pp = [postsHot, postsTop, postsNew, postsRising, postsControversial]
 
@@ -109,6 +127,9 @@ def redditBuilder(subreddits: list, reddit: praw.Reddit, limit: int):
                 break
 
             for post in postT:
+                if len(my_dict["image"]) >= limit:
+                    break
+
                 if re.search(r"\.(jpg|jpeg|png)$", post.url):
                     my_dict["image"].append(post.url)
                     my_dict["count"] += 1

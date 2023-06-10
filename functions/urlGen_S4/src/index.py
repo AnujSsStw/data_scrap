@@ -9,27 +9,40 @@ def main(req, res):
         import snscrape.modules.twitter as twitter
         import snscrape as ss
 
-        {"query": "anime", "limit": 10, "fromL1": True | False}
+        # {
+        #     "query": "anime",
+        #     "limit": 10,
+        #     "fromL1": True | False,
+        #     "dataType": "csv" | "json" | "raw",
+        # }
         payload = json.loads(req.payload)
         print(payload)
 
         allT = twitter.TwitterSearchScraper(
-            query=f"#{payload['query']}",
+            query=payload["query"],
             mode=ss.modules.twitter.TwitterSearchScraperMode.TOP,
         ).get_items()
 
         tweets = []
         if payload["fromL1"]:
-            for i, tweet in enumerate(allT):
-                if i > payload["limit"]:
-                    break
-                tweets.append(
-                    [
-                        tweet.user.username,
-                        tweet.content,
-                        tweet.media,
-                    ]
-                )
+            if payload["dataType"] == "csv":
+                for i, tweet in enumerate(allT):
+                    if i > payload["limit"]:
+                        break
+                    tweets.append(
+                        {
+                            "content": tweet.content,
+                            "media": tweet.media[0] if tweet.media else None,
+                        }
+                    )
+            elif payload["dataType"] == "json" or payload["raw"] == "raw":
+                for i, tweet in enumerate(allT):
+                    if i > payload["limit"]:
+                        break
+                    tweets.append(
+                        tweet.media[0] if tweet.media else None,
+                    )
+                # tweets[0].fullUrl
         else:
             for i, tweet in enumerate(allT):
                 if i > 9:
@@ -38,6 +51,7 @@ def main(req, res):
                     {
                         "content": tweet.content,
                         "media": tweet.media[0] if tweet.media else None,
+                        "likes": tweet.likeCount,
                     }
                 )
 

@@ -10,6 +10,7 @@ from pydotmap import DotMap
 def main(req, res):
     # {
     #   "pin": "wallpaper",
+    #   "limit": 10
     # }
     print("Request payload: ", req.payload)
     pin = None
@@ -19,13 +20,16 @@ def main(req, res):
     except Exception as e:
         print(e)
 
+    limit_urls = None
     try:
         scraper = PinterestImageScraper()
         urls = scraper.get_image_urls(pin)
+        limit: int = payload["limit"]
+        limit_urls = urls[:limit]
     except Exception as e:
         print("when doing call: ", e)
 
-    return res.json({"service": "pinterest", "urls": urls})
+    return res.json({"service": "pinterest", "urls": limit_urls})
 
 
 class PinterestImageScraper:
