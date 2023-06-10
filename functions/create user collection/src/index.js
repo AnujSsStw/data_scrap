@@ -41,40 +41,90 @@ module.exports = async function (req, res) {
     const user = userData.$id;
 
     // create a collection for the new user
-    const promise = database.createCollection(
-      DatabaseID,
-      sdk.ID.unique(),
-      user
-    );
+    const promise = database.createCollection(DatabaseID, user, userData.name, [
+      sdk.Permission.create(sdk.Role.users()),
+      sdk.Permission.read(sdk.Role.users()),
+      sdk.Permission.update(sdk.Role.users()),
+    ]);
 
-    promise.then(
-      async function (response) {
+    promise
+      .then(async function (response) {
         console.log(response);
 
         // create attributes for the new collection
-        const att1 = database.createUrlAttribute(
+        const q = database.createStringAttribute(
           DatabaseID,
           response.$id,
-          "txtUrl",
+          "q",
+          30,
           false
         );
 
-        const att2 = database.createIntegerAttribute(
+        const last_limit = database.createIntegerAttribute(
           DatabaseID,
           response.$id,
-          "count",
+          "last_limit",
           false,
-          undefined,
+          0,
           undefined,
           0
         );
 
-        await Promise.all([att1, att2]);
-      },
-      function (error) {
-        console.log(error);
-      }
-    );
+        const rawBucketId = database.createStringAttribute(
+          DatabaseID,
+          response.$id,
+          "rawBucketId",
+          30,
+          false
+        );
+
+        const jsonBucketUrl = database.createUrlAttribute(
+          DatabaseID,
+          response.$id,
+          "jsonBucketUrl",
+          false
+        );
+
+        const selected_s = database.createStringAttribute(
+          DatabaseID,
+          response.$id,
+          "selected_s",
+          30,
+          false,
+          undefined,
+          true
+        );
+
+        await Promise.all([
+          q,
+          last_limit,
+          rawBucketId,
+          jsonBucketUrl,
+          selected_s,
+        ]);
+
+        while (true) {
+          try {
+            await database.getattribute(DatabaseID, response.$id, "q");
+            await database.getattribute(DatabaseID, response.$id, "selected_s");
+            break;
+          } catch (e) {
+            await sleep(1000);
+          }
+        }
+
+        await database.createIndex(
+          DatabaseID,
+          response.$id,
+          "querySearch",
+          "fulltext",
+          ["q", "selected_s"],
+          ["ASC", "ASC"]
+        );
+      })
+      .catch(function (error) {
+        console.log("erro while creating : ", error);
+      });
   } catch (error) {
     console.error("Error parsing payload", error);
   }

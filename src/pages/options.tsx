@@ -13,9 +13,8 @@ import {
 import Link from "next/link";
 import { functions } from "~/utils/appwrite";
 import { atom, useAtom } from "jotai";
-import { payload } from ".";
 
-const p = atom((get) => get(payload));
+// const p = atom((get) => get(payload));
 
 export const createdBucketId = atom("");
 
@@ -23,7 +22,7 @@ const Options: NextPage = () => {
   const [sliderValue, setSliderValue] = React.useState(10);
   const [showTooltip, setShowTooltip] = React.useState(false);
   const [value, setValue] = React.useState("json");
-  const [selected] = useAtom(p);
+  // const [selected] = useAtom(p);
 
   const [bukID, setBukId] = useAtom(createdBucketId);
 
@@ -82,7 +81,7 @@ const Options: NextPage = () => {
           // query: { selected: selected },
         }}
       >
-        <Box
+        {/* <Box
           onClick={async () => {
             const updatedArr = selected.subreddits.map((str: string) =>
               str.replace("/r/", "").replace(/\/$/, "")
@@ -104,7 +103,7 @@ const Options: NextPage = () => {
           }}
         >
           Next -
-        </Box>
+        </Box> */}
       </Link>
     </div>
   );

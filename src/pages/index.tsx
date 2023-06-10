@@ -6,17 +6,40 @@ import {
   Input,
   Box,
   Button,
+  Skeleton,
+  useDisclosure,
+  FormControl,
+  FormLabel,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Slider,
+  SliderFilledTrack,
+  SliderMark,
+  SliderThumb,
+  SliderTrack,
+  Tooltip,
+  Radio,
+  RadioGroup,
+  Stack,
 } from "@chakra-ui/react";
 import styles from "./index.module.css";
 import { type NextPage } from "next";
 import Link from "next/link";
 import { api } from "~/utils/api";
-import { functions } from "~/utils/appwrite";
-import { Key, useContext, useState } from "react";
-import { UserContext, payloadForL1 } from "~/context";
+import { databases, functions } from "~/utils/appwrite";
+import React, { Key, useContext, useState } from "react";
+import { UserContext } from "~/context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { CardBox } from "~/components/Card";
+import { ID } from "appwrite";
+import { payloadForL1 } from "~/context";
+import { InitialFocus } from "~/components/Next";
 
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
@@ -29,8 +52,9 @@ const Home: NextPage = () => {
     pinterest: [],
     twitter: [],
   });
+  const [selected] = useAtom(payloadForL1);
 
-  // const { user } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const queryClient = useQueryClient();
   const mutfn = async ({
     functionId,
@@ -57,7 +81,6 @@ const Home: NextPage = () => {
         functionId: "647ec5026b8a17bda432",
         payload,
       });
-
       // const { response } = await functions.createExecution(
       //   "64763af50eff7902e26b",
       //   payload
@@ -97,73 +120,70 @@ const Home: NextPage = () => {
           </Button>
         </Box>
 
-        {
-          <Link
-            href={{
-              pathname: "/options",
-            }}
+        {mutation.isSuccess && (
+          <Box
             style={{
               display: "flex",
               marginTop: "10px",
               justifyContent: "center",
             }}
           >
-            <Button variant="ghost" colorScheme="blue">
-              Next
-            </Button>
-          </Link>
-        }
+            <InitialFocus q={topic} userId={user?.$id} />
+          </Box>
+        )}
 
-        <Box
-          maxW={"container.lg"}
-          mt={"20"}
-          mx={"auto"}
-          display={"flex"}
-          gap={4}
-          flexWrap={"wrap"}
-          flexDirection={"row"}
-        >
-          {data.chan_4.map(
-            (
-              item: { board: string; title: string | undefined },
-              idx: Key | null | undefined
-            ) => {
-              return (
-                <CardBox
-                  title={item.board}
-                  discription={item.title}
-                  key={idx}
-                  source="chan_4"
-                />
-              );
-            }
-          )}
-          {data.subreddits.map(
-            (
-              item: { subreddit: string; description: string | undefined },
-              idx: Key | null | undefined
-            ) => {
-              return (
-                <CardBox
-                  title={item.subreddit}
-                  discription={item.description}
-                  key={idx}
-                  source="subreddits"
-                />
-              );
-            }
-          )}
-          {data.twitter.map(
-            (item: { content: string }, idx: Key | null | undefined) => {
-              return (
-                <CardBox title={item.content} key={idx} source="twitter" />
-              );
-            }
-          )}
-          {data.pinterest.map((item: string, idx: Key | null | undefined) => {
-            return <CardBox title={item} key={idx} source="pinterest" />;
-          })}
-        </Box>
+        <Skeleton height="100vh" isLoaded={!mutation.isLoading}>
+          <Box
+            maxW={"container.lg"}
+            mt={"20"}
+            mx={"auto"}
+            display={"flex"}
+            gap={4}
+            flexWrap={"wrap"}
+            flexDirection={"row"}
+          >
+            {data.chan_4.map(
+              (
+                item: { board: string; title: string | undefined },
+                idx: Key | null | undefined
+              ) => {
+                return (
+                  <CardBox
+                    title={item.board}
+                    discription={item.title}
+                    key={idx}
+                    source="chan_4"
+                  />
+                );
+              }
+            )}
+            {data.subreddits.map(
+              (
+                item: { subreddit: string; description: string | undefined },
+                idx: Key | null | undefined
+              ) => {
+                return (
+                  <CardBox
+                    title={item.subreddit}
+                    discription={item.description}
+                    key={idx}
+                    source="subreddits"
+                  />
+                );
+              }
+            )}
+            {data.twitter.map(
+              (item: { content: string }, idx: Key | null | undefined) => {
+                return (
+                  <CardBox title={item.content} key={idx} source="twitter" />
+                );
+              }
+            )}
+            {data.pinterest.map((item: string, idx: Key | null | undefined) => {
+              return <CardBox title={item} key={idx} source="pinterest" />;
+            })}
+          </Box>
+        </Skeleton>
       </main>
     </>
   );
