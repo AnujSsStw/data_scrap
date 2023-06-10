@@ -3,7 +3,7 @@ import praw
 import json
 import time
 import concurrent.futures
-import threading
+import multiprocessing
 
 # You can remove imports of services you don't use
 from appwrite.services.account import Account
@@ -30,10 +30,6 @@ API_CLIENT = "DIh7RjYEWFD7owiTja0OGQ"
 API_SECRET = "KG8WVc51LIojuSdYDfPZAQRc0EzErA"
 REDDIT_USERNAME = "AnujSsSs"
 REDDIT_PASSWORD = "6TY@6_Pu6h8-tmw"
-
-# Global list
-actual_posts_url = []
-lock = threading.Lock()
 
 
 def main(req, res):
@@ -69,27 +65,35 @@ def main(req, res):
         "gen4": {"query": "wallpaper", "limit": 10, "fromL1": True | False},
     }
 
+    actual_posts_url = None
     try:
         payload = json.loads(req.payload)
         print(payload)
         # create execution
 
-        # Execute functions in parallel
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Create a shared list using multiprocessing.Manager
+        manager = multiprocessing.Manager()
+        shared_list = manager.list()
+
+        # Execute functions in parallel with multiple processes
+        with concurrent.futures.ProcessPoolExecutor() as executor:
             # Submit function 1
-            future1 = executor.submit(gen1, payload, functions)
+            future1 = executor.submit(gen1, payload, functions, shared_list)
 
             # Submit function 2
-            future2 = executor.submit(gen2, payload, functions)
+            future2 = executor.submit(gen2, payload, functions, shared_list)
 
             # Submit function 2
-            future3 = executor.submit(gen3, payload, functions)
+            future3 = executor.submit(gen3, payload, functions, shared_list)
 
             # Submit function 2
-            future4 = executor.submit(gen4, payload, functions)
+            future4 = executor.submit(gen4, payload, functions, shared_list)
 
             # Wait for both futures to complete
             concurrent.futures.wait([future1, future2, future3, future4])
+
+        # Convert the shared list to a regular list for further processing
+        actual_posts_url = list(shared_list)
 
     except Exception as e:
         print("error while payload or gen execution", e)
@@ -162,45 +166,37 @@ def checkingForGallery(subreddits: list, actual_posts_url: list, reddit: praw.Re
                 actual_posts_url.append(media_url)
 
 
-def gen1(payload: dict, functions: Functions):
+def gen1(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen1"]["subreddits"]) > 0:
         urlGen1R = functions.create_execution(
             "647f888eeaa470f6a362", json.dumps(payload["gen1"])
         )
         if urlGen1R["status"] == "completed":
-            with lock:
-                actual_posts_url.extend(
-                    json.loads(urlGen1R["response"])["urls"]["image"]
-                )
+            shared_list.extend(json.loads(urlGen1R["response"])["urls"]["image"])
 
 
-def gen2(payload: dict, functions: Functions):
+def gen2(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen2"]["boards"]) > 0:
         urlGen2C = functions.create_execution(
             "647f889c6c907ff58c57", json.dumps(payload["gen2"])
         )
         if urlGen2C["status"] == "completed":
-            with lock:
-                actual_posts_url.extend(
-                    json.loads(urlGen2C["response"])["urls"]["image"]
-                )
+            shared_list.extend(json.loads(urlGen2C["response"])["urls"]["image"])
 
 
-def gen3(payload: dict, functions: Functions):
+def gen3(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen3"]["pin"]) > 0:
         urlGen3P = functions.create_execution(
             "6482166f1f68d02a3570", json.dumps(payload["gen3"])
         )
         if urlGen3P["status"] == "completed":
-            with lock:
-                actual_posts_url.extend(json.loads(urlGen3P["response"])["urls"])
+            shared_list.extend(json.loads(urlGen3P["response"])["urls"])
 
 
-def gen4(payload: dict, functions: Functions):
+def gen4(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen4"]["query"]) > 0:
         urlGen4T = functions.create_execution(
             "64821f7fee991ae03baf", json.dumps(payload["gen4"])
         )
         if urlGen4T["status"] == "completed":
-            with lock:
-                actual_posts_url.extend(json.loads(urlGen4T["response"])["urls"])
+            shared_list.extend(json.loads(urlGen4T["response"])["urls"])
