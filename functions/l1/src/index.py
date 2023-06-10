@@ -72,15 +72,22 @@ def main(req, res):
                 "647f888eeaa470f6a362", json.dumps(payload["gen1"])
             )
 
-        urlGen1R = functions.create_execution(
-            "647f888eeaa470f6a362", json.dumps(payload["gen1"])
-        )
-        urlGen2C = functions.create_execution(
-            "647f889c6c907ff58c57", json.dumps(payload["gen2"])
-        )
+        if len(payload["gen2"]["boards"]) > 0:
+            urlGen2C = functions.create_execution(
+                "647f889c6c907ff58c57", json.dumps(payload["gen2"])
+            )
 
+        if len(payload["gen3"]["pin"]) > 0:
+            urlGen3P = functions.create_execution(
+                "6482166f1f68d02a3570", json.dumps(payload["gen3"])
+            )
+
+        if len(payload["gen4"]["query"]) > 0:
+            urlGen4T = functions.create_execution(
+                "64821f7fee991ae03baf", json.dumps(payload["gen4"])
+            )
     except Exception as e:
-        print("error while payload", e)
+        print("error while payload or gen execution", e)
 
     actual_posts_url = []
     try:
