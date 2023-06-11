@@ -31,11 +31,11 @@ def main(req, res):
                         break
                     tweets.append(
                         {
-                            "content": tweet.content,
+                            "content": tweet.rawContent,
                             "media": tweet.media[0] if tweet.media else None,
                         }
                     )
-            elif payload["dataType"] == "json" or payload["raw"] == "raw":
+            elif payload["dataType"] == "json" or payload["dataType"] == "raw":
                 for i, tweet in enumerate(allT):
                     if i > payload["limit"]:
                         break
@@ -49,7 +49,7 @@ def main(req, res):
                     break
                 tweets.append(
                     {
-                        "content": tweet.content,
+                        "content": tweet.rawContent,
                         "media": tweet.media[0] if tweet.media else None,
                         "likes": tweet.likeCount,
                     }
@@ -58,7 +58,7 @@ def main(req, res):
         print(tweets)
 
     except Exception as e:
-        print(e)
+        print("error: ", e)
 
     return res.json({"service": "twitter", "urls": tweets})
 

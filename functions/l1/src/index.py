@@ -13,23 +13,13 @@ from appwrite.services.users import Users
 from appwrite.permission import Permission
 from appwrite.role import Role
 
-"""
-  'req' variable has:
-    'headers' - object with request headers
-    'payload' - request body data as a string
-    'variables' - object with function variables
-
-  'res' variable has:
-    'send(text, status)' - function to return text response. Status code defaults to 200
-    'json(obj, status)' - function to return JSON response. Status code defaults to 200
-
-  If an error is thrown, a response with code 500 will be returned.
-"""
 
 API_CLIENT = "DIh7RjYEWFD7owiTja0OGQ"
 API_SECRET = "KG8WVc51LIojuSdYDfPZAQRc0EzErA"
 REDDIT_USERNAME = "AnujSsSs"
 REDDIT_PASSWORD = "6TY@6_Pu6h8-tmw"
+
+bucketObj = None
 
 
 def main(req, res):
@@ -69,6 +59,7 @@ def main(req, res):
     #         "dataType": "csv" | "json" | "raw",
     #     },
     #     "q": "wallpaper",
+    #     "dataType": "csv" | "json" | "raw
     # }
 
     actual_posts_url = None
@@ -120,6 +111,26 @@ def main(req, res):
         else:
             bucket_Id = payload["q"]
 
+        global bucketObj
+        bucketObj = bucketCheck(bucket_Id)
+
+        batches = [
+            data_array[i : i + batch_size]
+            for i in range(0, len(data_array), batch_size)
+        ]
+        for batch in batches:
+            batch = json.dumps(
+                {
+                    "urls": {"image": batch},
+                    "bucketId": bucket_Id,
+                }
+            )
+            send_data_batch(batch)
+            # make sleep for 3 sec
+            time.sleep(3)
+
+    def bucketCheck(bucket_Id):
+        result = None
         try:
             result = storage.get_bucket(bucket_id=bucket_Id)
             print("bucket found", result)
@@ -139,35 +150,49 @@ def main(req, res):
             )
             print("bucket created", result)
 
-        batches = [
-            data_array[i : i + batch_size]
-            for i in range(0, len(data_array), batch_size)
-        ]
-        for batch in batches:
-            batch = json.dumps(
+        return result
+
+    if payload["dataType"] == "raw":
+        send_data_in_batches(actual_posts_url, 10)
+        preview_data = []
+        for i, url in enumerate(actual_posts_url):
+            if i > 10:
+                break
+            if url.endswith(".jpg") or url.endswith(".png"):
+                preview_data.append(url)
+
+        print("preview data", preview_data)
+        # only for raw data
+        try:
+            print("bucket obj: ", bucketObj)
+            ddData = json.dumps(
                 {
-                    "urls": {"image": batch},
-                    "bucketId": bucket_Id,
+                    "bucketId": bucketObj["$id"],
+                    "TotalCount": len(actual_posts_url),
+                    "topic": payload["q"],
+                    "dataType": "raw",
                 }
             )
-            send_data_batch(batch)
-            # make sleep for 3 sec
-            time.sleep(3)
+            print("ddData", ddData)
 
-    send_data_in_batches(actual_posts_url, 10)
+            functions.create_execution(
+                function_id="6485b0c7c8e8feddb2f7", data=ddData, xasync=True
+            )
+        except Exception as e:
+            print("error while send data to docStuff", e)
 
-    preview_data = []
-    for i, url in enumerate(actual_posts_url):
-        if i > 10:
-            break
-        if url.endswith(".jpg") or url.endswith(".png"):
-            preview_data.append(url)
+        return res.json(
+            {
+                "preview data": preview_data,
+            }
+        )
 
-    return res.json(
-        {
-            "preview data": preview_data,
-        }
-    )
+    else:
+        return res.json(
+            {
+                "dataType": payload["dataType"],
+            }
+        )
 
 
 def checkingForGallery(subreddits: list, actual_posts_url: list, reddit: praw.Reddit):
@@ -182,6 +207,7 @@ def checkingForGallery(subreddits: list, actual_posts_url: list, reddit: praw.Re
                 actual_posts_url.append(media_url)
 
 
+# whatever reddit that offer currently -> images, gifs, videos, other(text, link)
 def gen1(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen1"]["subreddits"]) > 0:
         urlGen1R = functions.create_execution(
@@ -191,6 +217,7 @@ def gen1(payload: dict, functions: Functions, shared_list: list):
             shared_list.extend(json.loads(urlGen1R["response"])["urls"]["image"])
 
 
+# images from 4chan and weird stuff
 def gen2(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen2"]["boards"]) > 0:
         urlGen2C = functions.create_execution(
@@ -200,6 +227,7 @@ def gen2(payload: dict, functions: Functions, shared_list: list):
             shared_list.extend(json.loads(urlGen2C["response"])["urls"]["image"])
 
 
+# all about images
 def gen3(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen3"]["pin"]) > 0:
         urlGen3P = functions.create_execution(
@@ -209,6 +237,7 @@ def gen3(payload: dict, functions: Functions, shared_list: list):
             shared_list.extend(json.loads(urlGen3P["response"])["urls"])
 
 
+# about raw content of twitter and img, video, gif
 def gen4(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen4"]["query"]) > 0:
         urlGen4T = functions.create_execution(
