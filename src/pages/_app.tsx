@@ -24,7 +24,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           name="description"
           content="site to generate data on a certain topic"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <ChakraProvider>
         <UserContext.Provider value={providerValue}>

@@ -1,28 +1,30 @@
 import {
-  useDisclosure,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
   FormControl,
   FormLabel,
-  Slider,
-  SliderMark,
-  SliderTrack,
-  SliderFilledTrack,
-  Tooltip,
-  SliderThumb,
-  RadioGroup,
-  Stack,
-  Radio,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
   ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Radio,
+  RadioGroup,
+  Slider,
+  SliderFilledTrack,
+  SliderMark,
+  SliderThumb,
+  SliderTrack,
+  Stack,
+  Tooltip,
+  useDisclosure,
 } from "@chakra-ui/react";
+import { ID, Query } from "appwrite";
+import { useAtom } from "jotai";
 import { useRouter } from "next/router";
-import { ID } from "appwrite";
 import React from "react";
+import { createdBucketId, createdDocId, payloadForL1 } from "~/context";
 import { databases } from "~/utils/appwrite";
 
 export function InitialFocus({
@@ -41,43 +43,84 @@ export function InitialFocus({
   const [showTooltip, setShowTooltip] = React.useState(false);
   const [value, setValue] = React.useState("json");
 
-  const router = useRouter();
+  const [selected] = useAtom(payloadForL1);
 
-  const handleClick = async () => {
+  const router = useRouter();
+  const [_, setBukId] = useAtom(createdBucketId);
+  const [, setDocId] = useAtom(createdDocId);
+
+  async function userDocCheck() {
     try {
-      const { $createdAt } = await databases.createDocument(
+      const { documents, total } = await databases.listDocuments(
         "646a0f5d434c20bf1963",
         "6484461de416c5178e30",
-        ID.unique(),
-        {
-          last_limit: sliderValue * 10,
-          q: q,
-          format: value.toUpperCase(),
-          userId: userId,
-        }
+        [
+          Query.equal("q", q),
+          Query.equal("userId", userId as string),
+          Query.equal("format", value.toUpperCase()),
+        ]
       );
 
-      console.log($createdAt);
+      if (total == 0) {
+        const res = await databases.createDocument(
+          "646a0f5d434c20bf1963",
+          "6484461de416c5178e30",
+          ID.unique(),
+          {
+            last_limit: sliderValue,
+            q: q,
+            format: value.toUpperCase(),
+            userId: userId,
+          }
+        );
+        console.log(res);
+        setDocId(res.$id);
+      } else {
+        if (documents[0]?.last_limit != sliderValue) {
+          const res = await databases.updateDocument(
+            "646a0f5d434c20bf1963",
+            "6484461de416c5178e30",
+            documents[0]?.$id as string,
+            {
+              last_limit: sliderValue + documents[0]!.last_limit,
+            }
+          );
+          setDocId(res.$id);
+          console.log(res);
+        }
+      }
     } catch (error) {
       console.log(error);
     }
+  }
+
+  const handleClick = async () => {
+    await userDocCheck();
+
+    try {
+      if (selected.subreddits.length == 0) {
+        setBukId(q);
+      } else {
+        setBukId(
+          // @ts-ignore
+          selected!.subreddits[0].replace("/r/", "").replace(/\/$/, "")
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     switch (value) {
       case "json":
         router.push(
-          `/download/[format]?limit=${sliderValue}`,
-          `/download/json?limit=${sliderValue}`
-        );
-        break;
-      case "csv":
-        router.push(
-          `/download/[format]?limit=${sliderValue}`,
-          `/download/csv?limit=${sliderValue}`
+          `/download/[format]?q=${q}&limit=${sliderValue}`,
+          `/download/json?q=${q}&limit=${sliderValue}`
         );
         break;
       case "raw":
         router.push(
-          `/download/[raw]?limit=${sliderValue}`,
-          `/download/raw?limit=${sliderValue}`
+          `/download/[raw]?q=${q}&limit=${sliderValue}`,
+          `/download/raw?q=${q}&limit=${sliderValue}`
         );
         break;
       default:
@@ -142,7 +185,6 @@ export function InitialFocus({
               <RadioGroup onChange={setValue} value={value}>
                 <Stack direction="row">
                   <Radio value="json">Json</Radio>
-                  <Radio value="csv">Csv</Radio>
                   <Radio value="raw">Raw</Radio>
                 </Stack>
               </RadioGroup>

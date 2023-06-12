@@ -16,6 +16,19 @@
   padding: 4rem 1rem;
 }
 
+/* drag and drop area styles */
+.forInputFile {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 @media (min-width: 640px) {
   .container {
     max-width: 640px;

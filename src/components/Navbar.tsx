@@ -154,7 +154,10 @@ export function WithSubnavigation() {
           {hasUser && (
             // avatar
             <a href="https://test.authui.site/">
-              <Avatar name={user.name} src={avatar.href as unknown as string} />
+              <Avatar
+                name={user?.name}
+                src={avatar.href as unknown as string}
+              />
             </a>
           )}
         </Stack>

@@ -51,7 +51,7 @@ const History = () => {
     <Box display={"flex"} justifyContent={"center"} pt={10}>
       {!loading ? (
         history.length > 0 ? (
-          <TableContainer w={500}>
+          <TableContainer w={600}>
             <Table variant="simple">
               <Thead>
                 <Tr>
@@ -61,9 +61,9 @@ const History = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {history.map((item) => {
+                {history.map((item, idx) => {
                   return (
-                    <Tr>
+                    <Tr key={idx}>
                       <Td>{item.q}</Td>
                       <Td>{item.format}</Td>
                       <Td isNumeric>{item.last_limit}</Td>

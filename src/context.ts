@@ -13,9 +13,25 @@ export const UserContext = createContext<UserContext>({
   setUser: () => {},
 });
 
-export const payloadForL1 = atom({
+export interface Payload {
+  chan_4: string[];
+  subreddits: string[];
+  pinterest: string[];
+  twitter: string[];
+}
+export const payloadForL1 = atom<Payload>({
   chan_4: [],
   subreddits: [],
   pinterest: [],
   twitter: [],
 });
+
+export const preview_data = atom<{
+  preview_data: any[];
+}>({
+  preview_data: [],
+});
+
+export const createdBucketId = atom("");
+
+export const createdDocId = atom("");

@@ -39,17 +39,32 @@ module.exports = async function (req, res) {
 
   if (payload.dataType === "raw") {
     await rawDoc();
-  } else if (payload.dataType === "csv") {
-    csvDoc();
   } else if (payload.dataType === "json") {
-    jsonDoc();
+    await jsonDoc();
   } else {
     console.log("error while handling payload");
   }
 
   // for these functions we need to create a document and then upload the file to it dnd it is generally called from client side
-  function csvDoc() {}
-  function jsonDoc() {}
+
+  async function jsonDoc() {
+    //     docStuffData = {"bucketUrl": url, "topic": payload["q"], "dataType": "json"}
+    // create a document
+    try {
+      const doc = await database.createDocument(
+        "646a0db35166b90f8226",
+        "647e4ce8443227511022",
+        sdk.ID.unique(),
+        {
+          bucketUrl: payload.bucketUrl,
+          ofTopic: payload.topic,
+        }
+      );
+      console.log("doing json doc update", doc);
+    } catch (error) {
+      console.log("error while creating json doc", error);
+    }
+  }
 
   // actuall creating of the data is done by l1 it's just the doc that needs to be created
   async function rawDoc() {

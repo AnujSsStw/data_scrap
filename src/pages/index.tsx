@@ -51,6 +51,13 @@ const Home: NextPage = () => {
   });
 
   const handleSearch = async () => {
+    setData({
+      chan_4: [],
+      subreddits: [],
+      twitter: [],
+      pinterest: [],
+    });
+
     try {
       const payload = JSON.stringify({ q: topic, limit: 10 });
 

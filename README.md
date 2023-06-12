@@ -11,6 +11,7 @@
 - [TypeScript](https://www.typescriptlang.org/)
 - [Chakra UI](https://chakra-ui.com/)
 - [jszip](https://stuk.github.io/jszip/)
+- [AuthUI](https://www.authui.site/)
 
 ## Features 🪄
 
