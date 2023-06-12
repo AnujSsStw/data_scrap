@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Heading, Highlight, Select } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { ID, Models, Query } from "appwrite";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -120,6 +120,7 @@ const UploadPage = () => {
     const file = files[0];
     const fileData = file as File;
     const fileId = ID.unique();
+    console.log(fileData, fileId);
 
     // Upload file to bucket
     const response = await uploadMutation.mutateAsync({ fileId, fileData });
@@ -129,31 +130,34 @@ const UploadPage = () => {
 
   return (
     <Box>
-      <h1>Upload</h1>
-      <Box>
-        <h3>Files</h3>
-        <ul>
-          {fileList.map((file) => (
-            <li key={file.$id}>
-              <p>{file.file_name}</p>
-            </li>
-          ))}
-        </ul>
-      </Box>
-
-      <div {...getRootProps()}>
+      <Box
+        {...getRootProps()}
+        display={"flex"}
+        justifyContent={"center"}
+        p={10}
+        border={"2px dashed"}
+        maxW={"xl"}
+        mx={"auto"}
+        borderRadius={"md"}
+      >
         <input {...getInputProps()} />
         {isDragActive ? (
-          <p>Drop the files here ...</p>
+          <Heading>Drop the files here ...</Heading>
         ) : (
-          <p>Drag 'n' drop some files here, or click to select files</p>
+          <Heading>
+            Drag 'n' drop some files here, or click to select files
+          </Heading>
         )}
-      </div>
+      </Box>
 
       {/* uploading files */}
-      {uploadMutation.isLoading && <p>Uploading files...</p>}
+      {uploadMutation.isLoading && (
+        <Box display={"flex"} justifyContent={"center"} gap={10} p={4}>
+          <p>Uploading files...</p>
+        </Box>
+      )}
 
-      <Box display={"flex"} gap={"4"}>
+      <Box display={"flex"} justifyContent={"center"} gap={10} p={4}>
         <button
           type="button"
           onClick={() => {
@@ -161,7 +165,7 @@ const UploadPage = () => {
             setRejected([]);
           }}
         >
-          Remove all files
+          Remove files
         </button>
         <button type="submit" onClick={handleUpload}>
           Upload to bucket
@@ -169,23 +173,40 @@ const UploadPage = () => {
       </Box>
 
       {/* Accepted files */}
-      <h3>Accepted Files</h3>
-      <ul>
+      <Box display={"flex"} justifyContent={"center"} pb={5}>
         {files.map((file: any) => (
-          <li key={file.name}>
-            {/* <Image
-              src={file.preview}
-              alt={file.name}
-              width={100}
-              height={100}
-              onLoad={() => {
-                URL.revokeObjectURL(file.preview);
-              }}
-            /> */}
-            <p>{file.name}</p>
-          </li>
+          <Highlight
+            query={file.name}
+            styles={{ px: "2", py: "1", rounded: "full", bg: "teal.100" }}
+          >
+            {file.name}
+          </Highlight>
         ))}
-      </ul>
+      </Box>
+
+      <Box display={"flex"} justifyContent={"center"} maxW={600} mx={"auto"}>
+        <Select
+          placeholder="Previous Uploads And Files to Download"
+          onChange={(s) => {
+            fetch(s.target.value)
+              .then((response) => response.blob())
+              .then((blob) => {
+                // Create a temporary anchor element
+                var downloadLink = document.createElement("a");
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = "file.json";
+                downloadLink.click();
+              })
+              .catch((error) => console.log(error));
+          }}
+        >
+          {fileList.map((file, idx) => (
+            <option value={file.bucketUrl} key={idx}>
+              {file.file_name} - {file.$createdAt}
+            </option>
+          ))}
+        </Select>
+      </Box>
     </Box>
   );
 };
