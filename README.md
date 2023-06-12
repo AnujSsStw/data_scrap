@@ -1,4 +1,4 @@
-![Cover](public/favicon.ico)
+![Cover](public/logo.png)
 
 # ⚒️ DataScraperX 1000 😶‍🌫️
 
