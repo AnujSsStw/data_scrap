@@ -24,7 +24,7 @@ import { ID, Query } from "appwrite";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import React from "react";
-import { createdBucketId, createdDocId, payloadForL1 } from "~/context";
+import { createdBucketId, createdDocId, cursor, payloadForL1 } from "~/context";
 import { databases } from "~/utils/appwrite";
 
 export function InitialFocus({
@@ -48,6 +48,7 @@ export function InitialFocus({
   const router = useRouter();
   const [_, setBukId] = useAtom(createdBucketId);
   const [, setDocId] = useAtom(createdDocId);
+  const [, setCursor] = useAtom(cursor);
 
   async function userDocCheck() {
     try {
@@ -86,6 +87,7 @@ export function InitialFocus({
             }
           );
           setDocId(res.$id);
+          setCursor(documents[0]!.file_cursor);
           console.log(res);
         }
       }

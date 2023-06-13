@@ -10,6 +10,7 @@ import {
   Payload,
   createdBucketId,
   createdDocId,
+  cursor,
   payloadForL1,
   preview_data,
 } from "~/context";
@@ -27,6 +28,7 @@ const Format = () => {
   const [progress, setProgress] = useState(0);
   const [docId] = useAtom(createdDocId);
   const [selected] = useAtom(payloadForL1);
+  const [file_cursor] = useAtom(cursor);
 
   const mutfn = async ({
     functionId,
@@ -113,7 +115,9 @@ const Format = () => {
   };
 
   useEffect(() => {
-    console.log(router.query);
+    if (router.query) {
+      startL1();
+    }
   }, []);
 
   const downloadFile = useCallback(async () => {
@@ -151,6 +155,7 @@ const Format = () => {
   const handleClick = async () => {
     const promise = storage.listFiles(bucketId, [
       Query.limit(router.query.limit as unknown as number),
+      file_cursor ? Query.cursorAfter(file_cursor) : Query.cursorAfter(""),
     ]);
     const data: any = [];
     promise.then(
@@ -161,6 +166,7 @@ const Format = () => {
 
         setId(data);
         try {
+          // user doc
           const res = await databases.updateDocument(
             "646a0f5d434c20bf1963",
             "6484461de416c5178e30",
@@ -178,6 +184,8 @@ const Format = () => {
         console.log(error); // Failure
       }
     );
+
+    await downloadFile();
   };
 
   return (

@@ -35,3 +35,6 @@ export const preview_data = atom<{
 export const createdBucketId = atom("");
 
 export const createdDocId = atom("");
+
+// for retrieving fresh data from the bucket
+export const cursor = atom<string | undefined>(undefined);
