@@ -4,6 +4,7 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@chakra-ui/react";
+import Link from "next/link";
 
 const Error = () => {
   return (
@@ -12,7 +13,7 @@ const Error = () => {
         <AlertIcon />
         <AlertTitle>404</AlertTitle>
         <AlertDescription>
-          Back to <a href="/">home</a>
+          Back to <Link href="/">home</Link>
         </AlertDescription>
       </Alert>
     </div>
