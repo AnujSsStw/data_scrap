@@ -33,7 +33,7 @@ export let token: string;
 export function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
   const [hasUser, setHasUser] = useState(false);
-  const [avatar, setAvatar] = useState<any>();
+  const [avatar, setAvatar] = useState<URL>();
 
   const { user, setUser } = useContext(UserContext);
 
@@ -51,7 +51,7 @@ export function WithSubnavigation() {
         localStorage.removeItem("jwt");
         console.log(error);
       });
-  }, []);
+  }, [setUser]);
 
   useEffect(() => {
     const isPresent = window.localStorage.getItem("jwt");
@@ -156,7 +156,7 @@ export function WithSubnavigation() {
             <a href="https://test.authui.site/">
               <Avatar
                 name={user?.name}
-                src={avatar.href as unknown as string}
+                src={avatar!.href as unknown as string}
               />
             </a>
           )}
@@ -343,7 +343,7 @@ const NAV_ITEMS: Array<NavItem> = [
 ];
 
 const ColorMode = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { toggleColorMode } = useColorMode();
   return (
     <header>
       <Button onClick={toggleColorMode}>

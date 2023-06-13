@@ -35,7 +35,7 @@ export const JsonF = () => {
           payload
         );
 
-        const res = JSON.parse(response);
+        const res = JSON.parse(response) as { link: string };
         const fileUrl = res.link;
 
         // Fetch the JSON file
@@ -43,7 +43,7 @@ export const JsonF = () => {
           .then((response) => response.blob())
           .then((blob) => {
             // Create a temporary anchor element
-            var downloadLink = document.createElement("a");
+            const downloadLink = document.createElement("a");
             downloadLink.href = URL.createObjectURL(blob);
             downloadLink.download = "file.json";
             downloadLink.click();
@@ -53,8 +53,8 @@ export const JsonF = () => {
         console.log(error);
       }
     };
-    fn();
-  }, []);
+    fn().catch((error) => console.log(error));
+  }, [router.query, selected]);
 
   return (
     <Box display={"flex"} justifyContent={"center"} p={10}>

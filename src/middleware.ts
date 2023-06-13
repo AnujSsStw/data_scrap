@@ -10,13 +10,13 @@ const isPublic = (path: string) => {
 };
 
 // This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   if (isPublic(request.nextUrl.pathname)) {
     console.log("public path");
     return NextResponse.next();
   }
 
-  const jwt = request.cookies.get("jwt")?.value;
+  // const jwt = request.cookies.get("jwt")?.value;
 
   return NextResponse.next();
 }

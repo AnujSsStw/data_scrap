@@ -17,7 +17,9 @@ export default function Document() {
       <Head />
       <body>
         {/* 👇 Here's the script */}
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+        <ColorModeScript
+          initialColorMode={(theme.config as ThemeConfig).initialColorMode}
+        />
         <Main />
         <NextScript />
       </body>
