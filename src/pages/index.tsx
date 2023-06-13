@@ -165,9 +165,19 @@ const Home: NextPage = () => {
               }
             )}
             {data.twitter.map(
-              (item: { content: string }, idx: Key | null | undefined) => {
+              (
+                item: { content: string; media: Object; likes: number },
+                idx: Key | null | undefined
+              ) => {
                 return (
-                  <CardBox title={item.content} key={idx} source="twitter" />
+                  <CardBox
+                    title="Twitter"
+                    discription={item.content}
+                    key={idx}
+                    source="twitter"
+                    media={item.media}
+                    likes={item.likes}
+                  />
                 );
               }
             )}
