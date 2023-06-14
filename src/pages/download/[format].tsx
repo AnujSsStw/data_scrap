@@ -42,7 +42,6 @@ const Format = () => {
 
   const [bucketId, setBukId] = useAtom(createdBucketId);
   const [id, setId] = useState<string[]>([]);
-  const [actualDataLength, setActualDataLength] = useState(0); // this is the actual data length
   const [progress, setProgress] = useState(0);
   const [docId] = useAtom(createdDocId);
   const [selected] = useAtom(payloadForL1);
@@ -185,8 +184,6 @@ const Format = () => {
       });
       setId(id);
 
-      setActualDataLength(files.length);
-
       if (files.length > 0 && docId) {
         await databases.updateDocument(
           "648845ce0fe8f2d33b33",
@@ -200,7 +197,7 @@ const Format = () => {
 
       if (files.length === 0) setId(id);
     } catch (error) {
-      console.log(error);
+      console.log("error on bucketfile", error);
     }
   };
 
@@ -254,10 +251,10 @@ const Format = () => {
         </Box>
       )}
 
-      {activeStep === 1 && (
+      {activeStep === 1 && id.length > 0 && (
         <Box display={"flex"} justifyContent={"center"} p={5}>
           <Button variant={"outline"} onClick={downloadFile}>
-            Download {actualDataLength} files
+            Download {id.length} files
           </Button>
         </Box>
       )}
