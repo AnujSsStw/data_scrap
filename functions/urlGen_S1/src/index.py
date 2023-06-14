@@ -3,19 +3,20 @@ import praw
 import json
 import re
 
-API_CLIENT = "DIh7RjYEWFD7owiTja0OGQ"
-API_SECRET = "KG8WVc51LIojuSdYDfPZAQRc0EzErA"
-REDDIT_USERNAME = "AnujSsSs"
-REDDIT_PASSWORD = "6TY@6_Pu6h8-tmw"
-
 
 def main(req, res):
+    API_CLIENT = req.variables.get("API_CLIENT", None)
+    API_SECRET = req.variables.get("API_SECRET", None)
+    REDDIT_USERNAME = req.variables.get("REDDIT_USERNAME", None)
+    REDDIT_PASSWORD = req.variables.get("REDDIT_PASSWORD", None)
+    USER_AGENT = req.variables.get("USER_AGENT", None)
+
     reddit = praw.Reddit(
         client_id=API_CLIENT,  # peronal use script
         client_secret=API_SECRET,  # secret token
         usernme=REDDIT_USERNAME,  # profile username
         password=REDDIT_PASSWORD,  # profile password
-        user_agent="sheesh",
+        user_agent=USER_AGENT,  # user agent
     )
     # {
     #  "subreddits": ["wallpapers"],

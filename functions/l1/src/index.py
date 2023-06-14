@@ -13,7 +13,7 @@ from appwrite.services.users import Users
 from appwrite.permission import Permission
 from appwrite.role import Role
 
-
+# old one
 API_CLIENT = "DIh7RjYEWFD7owiTja0OGQ"
 API_SECRET = "KG8WVc51LIojuSdYDfPZAQRc0EzErA"
 REDDIT_USERNAME = "AnujSsSs"
@@ -31,13 +31,18 @@ def main(req, res):
     functions = Functions(client)
     users = Users(client)
 
-    client.set_endpoint("https://cloud.appwrite.io/v1").set_project(
-        "648841eb86516a2bef68"
-    ).set_key(
-        "d39df74199ec12be4496e1bce1c7df4a073b92e8ee2a1f58553a54af859a732759a48697e855304dc69b2882376161ca4ecbfd6350a122a92b1988ccff9ebced3f9772c9cb46f7624b7132bde505623804b83c99bf100e5543dd4e81f19af377f3765beaf528006c09b2285fe8166346757e080d1a073574cae96832e80c518e"
-    ).set_self_signed(
-        True
-    )
+    if not req.variables.get("APPWRITE_FUNCTION_ENDPOINT") or not req.variables.get(
+        "APPWRITE_FUNCTION_API_KEY"
+    ):
+        print("Environment variables are not set. Function cannot use Appwrite SDK.")
+    else:
+        print("Environment variables are set. Function can use Appwrite SDK. yo yo yo")
+        (
+            client.set_endpoint(req.variables.get("APPWRITE_FUNCTION_ENDPOINT", None))
+            .set_project(req.variables.get("APPWRITE_FUNCTION_PROJECT_ID", None))
+            .set_key(req.variables.get("APPWRITE_FUNCTION_API_KEY", None))
+            .set_self_signed(True)
+        )
 
     reddit = praw.Reddit(
         client_id=API_CLIENT,  # peronal use script
