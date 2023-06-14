@@ -73,7 +73,7 @@ export const JsonF = () => {
   return (
     <Box display={"flex"} justifyContent={"center"} p={10}>
       {isDownloading ? (
-        <Flex>
+        <Flex gap={3}>
           JSON is being created
           <Spinner />
         </Flex>
