@@ -31,7 +31,7 @@ No more coding complexities! DataScraperX 1000 allows you to get the data you ne
 
 Clearly attribute the creation of the data scraping website to the original creator or development team. This is done by adding a link to the original website in the footer of every data that is scraped.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/QnTMOnUnOZk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![yt video](https://i.ytimg.com/vi/QnTMOnUnOZk/hqdefault.jpg?sqp=-oaymwEcCNACELwBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDgE7FLv7Eojh3g_oeVXPQlqIWGYw)](https://youtu.be/QnTMOnUnOZk)
 
 ## 🔮 Future Plans
 
