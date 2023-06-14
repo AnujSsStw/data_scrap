@@ -17,7 +17,7 @@
 
 ### Data Storage and Export
 
-Facilities to store scraped data in a structured format such as CSV, JSON, or a database. Additionally, the ability to export the data for further analysis or integration with other systems.
+Facilities to store scraped data in a structured format such as JSON, or a database. Additionally, the ability to export the data for further analysis or integration with other systems.
 
 ### User-Friendly Interface
 
@@ -30,6 +30,8 @@ No more coding complexities! DataScraperX 1000 allows you to get the data you ne
 ### Acknowledging the Creator 🙏
 
 Clearly attribute the creation of the data scraping website to the original creator or development team. This is done by adding a link to the original website in the footer of every data that is scraped.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/QnTMOnUnOZk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## 🔮 Future Plans
 
