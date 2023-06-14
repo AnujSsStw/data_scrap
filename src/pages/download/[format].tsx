@@ -69,8 +69,8 @@ const Format = () => {
 
       // check if preview data exists
       const { total, documents } = await databases.listDocuments(
-        "646a0db35166b90f8226",
-        "647e4d8dc67145c82745",
+        "6488480242f3b85a5c4e",
+        "6488481a124ee5bcb962",
         [Query.equal("topic", [q, selected.subreddits[0] as unknown as string])]
       );
 
@@ -82,6 +82,8 @@ const Format = () => {
         });
 
         const res = JSON.parse(response);
+
+        console.log(res);
 
         setPreview({ preview_data: res["preview data"] });
       } else {
@@ -109,19 +111,15 @@ const Format = () => {
           setPreview({ preview_data: res["preview data"] });
         }
       }
+
+      await handleClick();
     } catch (error) {
       console.log("after shit show error", error);
     }
   };
 
-  useEffect(() => {
-    if (router.query) {
-      startL1();
-    }
-  }, []);
-
   const downloadFile = useCallback(async () => {
-    console.log("here");
+    console.log("here asdn buckiei s", bucketId);
     try {
       const zip = new JSZip();
       const totalFiles = id.length;
@@ -147,6 +145,9 @@ const Format = () => {
       linkElement.href = URL.createObjectURL(zipBlob);
       linkElement.download = "files.zip";
       linkElement.click();
+
+      // Remove the temporary link element
+      linkElement.remove();
     } catch (error) {
       console.log(error);
     }
@@ -155,7 +156,7 @@ const Format = () => {
   const handleClick = async () => {
     const promise = storage.listFiles(bucketId, [
       Query.limit(router.query.limit as unknown as number),
-      file_cursor ? Query.cursorAfter(file_cursor) : Query.cursorAfter(""),
+      file_cursor ? Query.cursorAfter(file_cursor) : Query.orderAsc("name"),
     ]);
     const data: any = [];
     promise.then(
@@ -168,8 +169,8 @@ const Format = () => {
         try {
           // user doc
           const res = await databases.updateDocument(
-            "646a0f5d434c20bf1963",
-            "6484461de416c5178e30",
+            "648845ce0fe8f2d33b33",
+            "648845d55f47e495074e",
             docId,
             {
               file_cursor: response.files[response.files.length - 1]?.$id,
@@ -184,15 +185,24 @@ const Format = () => {
         console.log(error); // Failure
       }
     );
-
-    await downloadFile();
   };
 
   return (
     <div>
-      <Button onClick={startL1}>Start L1</Button>
-      <Button onClick={handleClick}>Download {router.query.limit} files</Button>
-      <Progress value={progress} />
+      {progress > 0 && (
+        <Box maxW={700} mx={"auto"}>
+          <Progress value={progress} borderRadius={50} />
+          {progress}%
+        </Box>
+      )}
+
+      <Box display={"flex"} justifyContent={"center"} p={5}>
+        <Button onClick={startL1} variant={"outline"}>
+          Start Generating
+        </Button>
+      </Box>
+      <button onClick={downloadFile}>Download file </button>
+      {id && id.map((d: any, idx) => <p key={idx}>{d}</p>)}
       <Stack spacing={8} display={"flex"}>
         {preview.preview_data.map((item, idx) => {
           return <Box key={idx}>ok</Box>;

@@ -32,9 +32,9 @@ def main(req, res):
     users = Users(client)
 
     client.set_endpoint("https://cloud.appwrite.io/v1").set_project(
-        "6463a34a73ca03c70d35"
+        "648841eb86516a2bef68"
     ).set_key(
-        "8e2d4eb0b3a64642fcaa0163302bf185053e28fa015c6c2b654e0f313afa07abd709347fcfbac4584c16bfe00df5760daa3f728ed10f6f042fc900fc41283a2601758c446d5673b987b686ccf951deba9e463d9bfff06a3f9f6e722634b984005f0c5898eb9848c63f16d77ca1d56c2d4dbae51abe6000ea35d16d474d66e64f"
+        "d39df74199ec12be4496e1bce1c7df4a073b92e8ee2a1f58553a54af859a732759a48697e855304dc69b2882376161ca4ecbfd6350a122a92b1988ccff9ebced3f9772c9cb46f7624b7132bde505623804b83c99bf100e5543dd4e81f19af377f3765beaf528006c09b2285fe8166346757e080d1a073574cae96832e80c518e"
     ).set_self_signed(
         True
     )
@@ -127,7 +127,7 @@ def main(req, res):
             )
             send_data_batch(batch)
             # make sleep for 3 sec
-            time.sleep(3)
+            # time.sleep(3)
 
     def bucketCheck(bucket_Id):
         result = None
@@ -145,8 +145,8 @@ def main(req, res):
                     Permission.read(Role.any()),
                     Permission.write(Role.any()),
                 ],
-                file_security=None,
                 enabled=True,
+                # file_security=True,
             )
             print("bucket created", result)
 
@@ -158,8 +158,7 @@ def main(req, res):
         for i, url in enumerate(actual_posts_url):
             if i > 10:
                 break
-            if url.endswith(".jpg") or url.endswith(".png"):
-                preview_data.append(url)
+            preview_data.append(url)
 
         print("preview data", preview_data)
         # only for raw data
@@ -210,11 +209,14 @@ def checkingForGallery(subreddits: list, actual_posts_url: list, reddit: praw.Re
 # whatever reddit that offer currently -> images, gifs, videos, other(text, link)
 def gen1(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen1"]["subreddits"]) > 0:
-        urlGen1R = functions.create_execution(
-            "647f888eeaa470f6a362", json.dumps(payload["gen1"])
-        )
-        if urlGen1R["status"] == "completed":
-            shared_list.extend(json.loads(urlGen1R["response"])["urls"]["image"])
+        try:
+            urlGen1R = functions.create_execution(
+                "647f888eeaa470f6a362", json.dumps(payload["gen1"])
+            )
+            if urlGen1R["status"] == "completed":
+                shared_list.extend(json.loads(urlGen1R["response"])["urls"]["image"])
+        except Exception as e:
+            print("error while gen1", e)
 
 
 # images from 4chan and weird stuff

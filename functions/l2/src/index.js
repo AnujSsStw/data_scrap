@@ -5,9 +5,9 @@ const { Readable } = require("stream");
 const client = new Client();
 client
   .setEndpoint("https://cloud.appwrite.io/v1")
-  .setProject("6463a34a73ca03c70d35")
+  .setProject("648841eb86516a2bef68")
   .setKey(
-    "8e2d4eb0b3a64642fcaa0163302bf185053e28fa015c6c2b654e0f313afa07abd709347fcfbac4584c16bfe00df5760daa3f728ed10f6f042fc900fc41283a2601758c446d5673b987b686ccf951deba9e463d9bfff06a3f9f6e722634b984005f0c5898eb9848c63f16d77ca1d56c2d4dbae51abe6000ea35d16d474d66e64f"
+    "d39df74199ec12be4496e1bce1c7df4a073b92e8ee2a1f58553a54af859a732759a48697e855304dc69b2882376161ca4ecbfd6350a122a92b1988ccff9ebced3f9772c9cb46f7624b7132bde505623804b83c99bf100e5543dd4e81f19af377f3765beaf528006c09b2285fe8166346757e080d1a073574cae96832e80c518e"
   );
 
 const storage = new Storage(client);

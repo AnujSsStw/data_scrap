@@ -116,75 +116,83 @@ const Home: NextPage = () => {
           <Box
             style={{
               display: "flex",
-              marginTop: "10px",
+              // marginTop: "10px",
               justifyContent: "center",
+              position: "fixed",
+              bottom: "10px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              padding: "10px",
+              zIndex: 100,
             }}
           >
             <InitialFocus q={topic} userId={user?.$id} />
           </Box>
         )}
 
-        <Skeleton height="100vh" isLoaded={!mutation.isLoading}>
-          <Box
-            maxW={"container.lg"}
-            mt={"20"}
-            mx={"auto"}
-            display={"flex"}
-            gap={4}
-            flexWrap={"wrap"}
-            flexDirection={"row"}
-          >
-            {data.subreddits.map(
-              (
-                item: { subreddit: string; description: string | undefined },
-                idx: Key | null | undefined
-              ) => {
-                return (
-                  <CardBox
-                    title={item.subreddit}
-                    discription={item.description}
-                    key={idx}
-                    source="subreddits"
-                  />
-                );
-              }
-            )}
-            {data.chan_4.map(
-              (
-                item: { board: string; title: string | undefined },
-                idx: Key | null | undefined
-              ) => {
-                return (
-                  <CardBox
-                    title={item.board}
-                    discription={item.title}
-                    key={idx}
-                    source="chan_4"
-                  />
-                );
-              }
-            )}
-            {data.twitter.map(
-              (
-                item: { content: string; media: Object; likes: number },
-                idx: Key | null | undefined
-              ) => {
-                return (
-                  <CardBox
-                    title="Twitter"
-                    discription={item.content}
-                    key={idx}
-                    source="twitter"
-                    media={item.media}
-                    likes={item.likes}
-                  />
-                );
-              }
-            )}
-            {data.pinterest.map((item: string, idx: Key | null | undefined) => {
-              return <CardBox title={item} key={idx} source="pinterest" />;
-            })}
-          </Box>
+        <Skeleton
+          height="100vh"
+          isLoaded={!mutation.isLoading}
+          maxW={"container.lg"}
+          mt={"20"}
+          mx={"auto"}
+          display={"flex"}
+          gap={4}
+          flexWrap={"wrap"}
+          flexDirection={"row"}
+          borderRadius={"md"}
+        >
+          {/* <Box> */}
+          {data.subreddits.map(
+            (
+              item: { subreddit: string; description: string | undefined },
+              idx: Key | null | undefined
+            ) => {
+              return (
+                <CardBox
+                  title={item.subreddit}
+                  discription={item.description}
+                  key={idx}
+                  source="subreddits"
+                />
+              );
+            }
+          )}
+          {data.chan_4.map(
+            (
+              item: { board: string; title: string | undefined },
+              idx: Key | null | undefined
+            ) => {
+              return (
+                <CardBox
+                  title={item.board}
+                  discription={item.title}
+                  key={idx}
+                  source="chan_4"
+                />
+              );
+            }
+          )}
+          {data.twitter.map(
+            (
+              item: { content: string; media: Object; likes: number },
+              idx: Key | null | undefined
+            ) => {
+              return (
+                <CardBox
+                  title={item.content}
+                  key={idx}
+                  source="twitter"
+                  media={item.media}
+                  likes={item.likes}
+                />
+              );
+            }
+          )}
+          {data.pinterest.map((item: string, idx: Key | null | undefined) => {
+            return <CardBox title={item} key={idx} source="pinterest" />;
+          })}
+          {/* </Box> */}
         </Skeleton>
       </main>
     </>

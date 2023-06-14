@@ -46,15 +46,15 @@ export function InitialFocus({
   const [selected] = useAtom(payloadForL1);
 
   const router = useRouter();
-  const [_, setBukId] = useAtom(createdBucketId);
+  const [, setBukId] = useAtom(createdBucketId);
   const [, setDocId] = useAtom(createdDocId);
   const [, setCursor] = useAtom(cursor);
 
   async function userDocCheck() {
     try {
       const { documents, total } = await databases.listDocuments(
-        "646a0f5d434c20bf1963",
-        "6484461de416c5178e30",
+        "648845ce0fe8f2d33b33",
+        "648845d55f47e495074e",
         [
           Query.equal("q", q),
           Query.equal("userId", userId as string),
@@ -62,10 +62,12 @@ export function InitialFocus({
         ]
       );
 
+      console.log("here", documents);
+
       if (total == 0) {
         const res = await databases.createDocument(
-          "646a0f5d434c20bf1963",
-          "6484461de416c5178e30",
+          "648845ce0fe8f2d33b33",
+          "648845d55f47e495074e",
           ID.unique(),
           {
             last_limit: sliderValue,
@@ -79,8 +81,8 @@ export function InitialFocus({
       } else {
         if (documents[0]?.last_limit != sliderValue) {
           const res = await databases.updateDocument(
-            "646a0f5d434c20bf1963",
-            "6484461de416c5178e30",
+            "648845ce0fe8f2d33b33",
+            "648845d55f47e495074e",
             documents[0]?.$id as string,
             {
               last_limit: sliderValue + documents[0]!.last_limit,
@@ -92,24 +94,20 @@ export function InitialFocus({
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log("while doing doc thing in next", error);
     }
   }
 
   const handleClick = async () => {
     await userDocCheck();
 
-    try {
-      if (selected.subreddits.length == 0) {
-        setBukId(q);
-      } else {
-        setBukId(
-          // @ts-ignore
-          selected!.subreddits[0].replace("/r/", "").replace(/\/$/, "")
-        );
-      }
-    } catch (error) {
-      console.log(error);
+    if (selected.subreddits.length == 0) {
+      setBukId(q);
+    } else {
+      setBukId(
+        // @ts-ignore
+        selected!.subreddits[0].replace("/r/", "").replace(/\/$/, "")
+      );
     }
 
     switch (value) {
@@ -132,7 +130,9 @@ export function InitialFocus({
 
   return (
     <>
-      <Button onClick={onOpen}>Next</Button>
+      <Button onClick={onOpen} bg={"ActiveBorder"}>
+        Next
+      </Button>
 
       <Modal
         initialFocusRef={initialRef}
@@ -146,7 +146,7 @@ export function InitialFocus({
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel>Limit (100% is 1000 for now)</FormLabel>
+              <FormLabel>Limit (100% is 100 for now)</FormLabel>
               <Slider
                 id="slider"
                 defaultValue={5}

@@ -21,7 +21,7 @@ export const appwriteRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       const promise = await databases.createCollection(
-        "646a0f5d434c20bf1963",
+        "648845ce0fe8f2d33b33",
         ID.unique(),
         input.collectionName
       );

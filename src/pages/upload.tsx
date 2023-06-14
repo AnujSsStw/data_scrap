@@ -1,4 +1,11 @@
-import { Box, Heading, Highlight, Select } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Highlight,
+  Select,
+  useToast,
+} from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { ID, Models, Query } from "appwrite";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -11,6 +18,7 @@ const UploadPage = () => {
   const [rejected, setRejected] = useState<any>([]);
   const { user } = useContext(UserContext);
   const [fileList, setFileList] = useState<Models.Document[]>([]);
+  const toast = useToast();
 
   const mutfn = async ({
     fileData,
@@ -37,8 +45,8 @@ const UploadPage = () => {
     file_name: string;
   }) => {
     return await databases.createDocument(
-      "646a0f5d434c20bf1963",
-      "64870ec24c6273d923c1",
+      "648845ce0fe8f2d33b33",
+      "648846382bc3ae6edefb",
       ID.unique(),
       {
         userId: user?.$id,
@@ -97,8 +105,8 @@ const UploadPage = () => {
         console.log("wrkin");
 
         const response = await databases.listDocuments(
-          "646a0f5d434c20bf1963",
-          "64870ec24c6273d923c1",
+          "648845ce0fe8f2d33b33",
+          "648846382bc3ae6edefb",
           [Query.equal("userId", user?.$id as unknown as string)]
         );
         console.log(response);
@@ -126,7 +134,21 @@ const UploadPage = () => {
     const response = await uploadMutation.mutateAsync({ fileId, fileData });
     const uu = storage.getFileView("6481776513aa5b20149d", response.$id);
     await docMutation.mutateAsync({ bucketUrl: uu.href, file_name: file.name });
+
+    setFiles([]);
   };
+
+  useEffect(() => {
+    if (uploadMutation.isSuccess) {
+      toast({
+        title: "File uploaded.",
+        description: "We've successfully uploaded your file.",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  }, [uploadMutation.isSuccess]);
 
   return (
     <Box>
@@ -158,24 +180,32 @@ const UploadPage = () => {
       )}
 
       <Box display={"flex"} justifyContent={"center"} gap={10} p={4}>
-        <button
+        <Button
           type="button"
           onClick={() => {
             setFiles([]);
             setRejected([]);
           }}
+          _hover={{ bg: "red.500" }}
         >
           Remove files
-        </button>
-        <button type="submit" onClick={handleUpload}>
+        </Button>
+        <Button
+          type="submit"
+          onClick={handleUpload}
+          _hover={{
+            bg: "green.500",
+          }}
+        >
           Upload to bucket
-        </button>
+        </Button>
       </Box>
 
       {/* Accepted files */}
       <Box display={"flex"} justifyContent={"center"} pb={5}>
-        {files.map((file: any) => (
+        {files.map((file: any, key: number) => (
           <Highlight
+            key={key}
             query={file.name}
             styles={{ px: "2", py: "1", rounded: "full", bg: "teal.100" }}
           >
@@ -202,7 +232,7 @@ const UploadPage = () => {
         >
           {fileList.map((file, idx) => (
             <option value={file.bucketUrl} key={idx}>
-              {file.file_name} - {file.$createdAt}
+              {file.file_name} - {new Date(file.$createdAt).toLocaleString()}
             </option>
           ))}
         </Select>

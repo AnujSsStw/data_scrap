@@ -1,13 +1,14 @@
 import { Box } from "@chakra-ui/react";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { payloadForL1 } from "~/context";
 import { createPayload } from "~/pages/download/[format]";
-import { functions } from "~/utils/appwrite";
+import { functions, storage } from "~/utils/appwrite";
 
 export const JsonF = () => {
   const [selected] = useAtom(payloadForL1);
+  const [isDownloading, setIsDownloading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -35,30 +36,41 @@ export const JsonF = () => {
           payload
         );
 
-        const res = JSON.parse(response) as { link: string };
-        const fileUrl = res.link;
+        const res = JSON.parse(response) as {
+          link: string;
+          result: { $id: string; bucketId: string };
+        };
+        console.log(res);
 
-        // Fetch the JSON file
-        fetch(fileUrl)
-          .then((response) => response.blob())
-          .then((blob) => {
-            // Create a temporary anchor element
-            const downloadLink = document.createElement("a");
-            downloadLink.href = URL.createObjectURL(blob);
-            downloadLink.download = "file.json";
-            downloadLink.click();
-          })
-          .catch((error) => console.log(error));
+        const result = storage.getFileDownload(
+          res.result.bucketId,
+          res.result.$id
+        );
+        console.log(result);
+
+        // Create a temporary anchor element
+        const downloadLink = document.createElement("a");
+        downloadLink.href = result.href;
+        downloadLink.download = "file.json";
+        downloadLink.click();
+
+        downloadLink.remove();
       } catch (error) {
-        console.log(error);
+        console.log("tell me whe", error);
       }
     };
-    fn().catch((error) => console.log(error));
-  }, [router.query, selected]);
+    fn()
+      .then(() => setIsDownloading(false))
+      .catch((e) => console.log(e));
+  }, []);
 
   return (
     <Box display={"flex"} justifyContent={"center"} p={10}>
-      <p>JSON is being created</p>
+      {isDownloading ? (
+        <p>JSON is being created</p>
+      ) : (
+        <p>JSON is ready for download</p>
+      )}
     </Box>
   );
 };

@@ -27,9 +27,9 @@ const History = () => {
       if (user) {
         try {
           const { documents, total } = await databases.listDocuments(
-            "646a0f5d434c20bf1963",
-            "6484461de416c5178e30",
-            [Query.equal("userId", user.$id), Query.orderAsc("q")]
+            "648845ce0fe8f2d33b33",
+            "648845d55f47e495074e",
+            [Query.equal("userId", user.$id), Query.orderDesc("$createdAt")]
           );
 
           console.log(documents);
@@ -58,6 +58,7 @@ const History = () => {
                   <Th>q</Th>
                   <Th>format</Th>
                   <Th isNumeric>limit</Th>
+                  <Th isNumeric>CreatedAt</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -67,6 +68,9 @@ const History = () => {
                       <Td>{item.q}</Td>
                       <Td>{item.format}</Td>
                       <Td isNumeric>{item.last_limit}</Td>
+                      <Td isNumeric>
+                        {new Date(item.$createdAt).toLocaleString()}
+                      </Td>
                     </Tr>
                   );
                 })}

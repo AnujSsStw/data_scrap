@@ -8,8 +8,8 @@ import {
 } from "appwrite";
 
 export const client = new Client()
-  .setEndpoint("https://cloud.appwrite.io/v1") // Your API Endpoint
-  .setProject(process.env.NEXT_PUBLIC_PROJECT_ID as string); // Your project ID
+  .setEndpoint("https://cloud.appwrite.io/v1")
+  .setProject("648841eb86516a2bef68");
 
 export const account = new Account(client);
 

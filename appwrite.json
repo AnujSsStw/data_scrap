@@ -1,139 +1,114 @@
 {
-    "projectId": "6463a34a73ca03c70d35",
-    "projectName": "test",
-    "functions": [
-        {
-            "$id": "647c27ecc6e9a01b29a3",
-            "name": "l1",
-            "runtime": "python-3.9",
-            "path": "functions/l1",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [
-                "users"
-            ],
-            "events": [],
-            "schedule": "",
-            "timeout": 300
-        },
-        {
-            "$id": "647c27fe0d76730d30d2",
-            "name": "l2",
-            "runtime": "node-16.0",
-            "path": "functions/l2",
-            "entrypoint": "src/index.js",
-            "ignore": [
-                "node_modules",
-                ".npm"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 300
-        },
-        {
-            "$id": "647ec5026b8a17bda432",
-            "name": "titles",
-            "runtime": "python-3.9",
-            "path": "functions/titles",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [
-                "users"
-            ],
-            "events": [],
-            "schedule": "",
-            "timeout": 30
-        },
-        {
-            "$id": "647f888eeaa470f6a362",
-            "name": "urlGen S1",
-            "runtime": "python-3.9",
-            "path": "functions/urlGen S1",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 15
-        },
-        {
-            "$id": "647f889c6c907ff58c57",
-            "name": "urlGen S2",
-            "runtime": "node-16.0",
-            "path": "functions/urlGen S2",
-            "entrypoint": "src/index.js",
-            "ignore": [
-                "node_modules",
-                ".npm"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 15
-        },
-        {
-            "$id": "6482166f1f68d02a3570",
-            "name": "urlGen S3",
-            "runtime": "python-3.9",
-            "path": "functions/urlGen S3",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 300
-        },
-        {
-            "$id": "64821f7fee991ae03baf",
-            "name": "urlGen_S4",
-            "runtime": "python-3.9",
-            "path": "functions/urlGen_S4",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 30
-        },
-        {
-            "$id": "6485b0c7c8e8feddb2f7",
-            "name": "docStuff",
-            "runtime": "node-16.0",
-            "path": "functions/docStuff",
-            "entrypoint": "src/index.js",
-            "ignore": [
-                "node_modules",
-                ".npm"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 15
-        },
-        {
-            "$id": "6486b9ddaaf02f912d99",
-            "name": "jsonCreator",
-            "runtime": "python-3.9",
-            "path": "functions/jsonCreator",
-            "entrypoint": "src/index.py",
-            "ignore": [
-                "__pypackages__"
-            ],
-            "execute": [],
-            "events": [],
-            "schedule": "",
-            "timeout": 15
-        }
-    ]
+  "projectId": "648841eb86516a2bef68",
+  "projectName": "DataScraperX 1000",
+  "functions": [
+    {
+      "$id": "647c27ecc6e9a01b29a3",
+      "name": "l1",
+      "runtime": "python-3.9",
+      "path": "functions/l1",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": ["users"],
+      "events": [],
+      "schedule": "",
+      "timeout": 300
+    },
+    {
+      "$id": "647c27fe0d76730d30d2",
+      "name": "l2",
+      "runtime": "node-16.0",
+      "path": "functions/l2",
+      "entrypoint": "src/index.js",
+      "ignore": ["node_modules", ".npm"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 300
+    },
+    {
+      "$id": "647ec5026b8a17bda432",
+      "name": "titles",
+      "runtime": "python-3.9",
+      "path": "functions/titles",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": ["users"],
+      "events": [],
+      "schedule": "",
+      "timeout": 30
+    },
+    {
+      "$id": "647f888eeaa470f6a362",
+      "name": "urlGen_S1",
+      "runtime": "python-3.9",
+      "path": "functions/urlGen_S1",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 300
+    },
+    {
+      "$id": "647f889c6c907ff58c57",
+      "name": "urlGen S2",
+      "runtime": "node-16.0",
+      "path": "functions/urlGen S2",
+      "entrypoint": "src/index.js",
+      "ignore": ["node_modules", ".npm"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 15
+    },
+    {
+      "$id": "6482166f1f68d02a3570",
+      "name": "urlGen S3",
+      "runtime": "python-3.9",
+      "path": "functions/urlGen S3",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 300
+    },
+    {
+      "$id": "64821f7fee991ae03baf",
+      "name": "urlGen_S4",
+      "runtime": "python-3.9",
+      "path": "functions/urlGen_S4",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 30
+    },
+    {
+      "$id": "6485b0c7c8e8feddb2f7",
+      "name": "docStuff",
+      "runtime": "node-16.0",
+      "path": "functions/docStuff",
+      "entrypoint": "src/index.js",
+      "ignore": ["node_modules", ".npm"],
+      "execute": [],
+      "events": [],
+      "schedule": "",
+      "timeout": 15
+    },
+    {
+      "$id": "6486b9ddaaf02f912d99",
+      "name": "jsonCreator",
+      "runtime": "python-3.9",
+      "path": "functions/jsonCreator",
+      "entrypoint": "src/index.py",
+      "ignore": ["__pypackages__"],
+      "execute": ["users"],
+      "events": [],
+      "schedule": "",
+      "timeout": 15
+    }
+  ]
 }
