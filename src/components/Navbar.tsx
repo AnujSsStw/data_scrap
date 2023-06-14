@@ -49,7 +49,6 @@ export function WithSubnavigation() {
       .catch((error) => {
         setHasUser(false);
         localStorage.removeItem("jwt");
-        console.log(error);
       });
   }, [setUser]);
 
@@ -59,7 +58,6 @@ export function WithSubnavigation() {
       account
         .createJWT()
         .then(async (response) => {
-          console.log(response);
           localStorage.setItem("jwt", response.jwt);
 
           await fetch("/api/setJwt", {

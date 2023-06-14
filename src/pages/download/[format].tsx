@@ -18,8 +18,6 @@ import { databases, functions, storage } from "~/utils/appwrite";
 const Format = () => {
   const router = useRouter();
 
-  // IsLogin();
-
   if (router.query.format === "json") {
     return <JsonF />;
   }
@@ -51,7 +49,6 @@ const Format = () => {
   const mutation = useMutation({
     mutationFn: mutfn,
     onSuccess: (data) => {
-      console.log(data);
       queryClient.setQueryData(["filesId", {}], data.response);
     },
   });
@@ -74,7 +71,6 @@ const Format = () => {
         q as string,
         value as string
       );
-      console.log(payload);
 
       // check if preview data exists 6488481a124ee5bcb962 6488480242f3b85a5c4e
       const { total, documents } = await databases.listDocuments(
@@ -83,27 +79,19 @@ const Format = () => {
         [Query.equal("topic", [q, selected.subreddits[0] as unknown as string])]
       );
 
-      console.log(total, documents);
-
       if (total == 0) {
-        console.log("no preview data");
         const { response } = await mutation.mutateAsync({
           functionId: "647c27ecc6e9a01b29a3",
           payload: payload,
         });
 
         const res = JSON.parse(response);
-        console.log("creating new data");
-
-        console.log(res);
 
         setPreview({ preview_data: res["preview data"] });
       } else {
-        console.log(documents);
         // get the bucket id and file id
         if (documents[0]?.TotalCount >= sliderValue) {
           // seth the preview data
-          console.log("preview data with under limit");
           const bucketId = documents[0]!.bucketId;
           setBukId(bucketId);
 
@@ -121,7 +109,7 @@ const Format = () => {
               });
             },
             function (error) {
-              console.log("while seeting previ i already exist one", error); // Failure
+              console.log(error); // Failure
             }
           );
         } else {
@@ -129,7 +117,6 @@ const Format = () => {
           // going to run the function again but with keeping in mind that the data is already there so we need to append the data
           // but going to give user a cursor of last file id (last file id from which the new data will be appended)
           // so when listing the files we can start from that file id and go to the end
-          console.log("preview data with over limit");
 
           const { response } = await mutation.mutateAsync({
             functionId: "647c27ecc6e9a01b29a3",
@@ -144,12 +131,11 @@ const Format = () => {
 
       await handleClick();
     } catch (error) {
-      console.log("after shit show error", error);
+      console.log(error);
     }
   };
 
   const downloadFile = useCallback(async () => {
-    console.log("here asdn buckiei s", bucketId);
     try {
       const zip = new JSZip();
       const totalFiles = id.length;
@@ -183,8 +169,6 @@ const Format = () => {
     }
   }, [id]);
 
-  console.log(id);
-
   const handleClick = async () => {
     const promise = storage.listFiles(bucketId, [
       Query.limit(router.query.limit as unknown as number),
@@ -208,7 +192,6 @@ const Format = () => {
               file_cursor: response.files[response.files.length - 1]?.$id,
             }
           );
-          console.log(res);
         } catch (error) {
           console.log(error);
         }

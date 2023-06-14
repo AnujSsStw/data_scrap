@@ -31,8 +31,6 @@ const History = () => {
             [Query.equal("userId", user.$id), Query.orderDesc("$createdAt")]
           );
 
-          console.log(documents);
-
           setHistory(documents);
           setLoading(false);
           if (total === 0) {

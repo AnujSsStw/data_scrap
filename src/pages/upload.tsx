@@ -33,9 +33,6 @@ const UploadPage = () => {
 
   const uploadMutation = useMutation({
     mutationFn: mutfn,
-    onSuccess: (data) => {
-      console.log(data);
-    },
   });
 
   const mutfn2 = async ({
@@ -59,9 +56,6 @@ const UploadPage = () => {
 
   const docMutation = useMutation({
     mutationFn: mutfn2,
-    onSuccess: (data) => {
-      console.log(data);
-    },
   });
   const onDrop = useCallback(
     (acceptedFiles: any[], rejectedFiles: string | any[]) => {
@@ -103,14 +97,11 @@ const UploadPage = () => {
   useEffect(() => {
     async function getFiles() {
       try {
-        console.log("wrkin");
-
         const response = await databases.listDocuments(
           "648845ce0fe8f2d33b33",
           "648846382bc3ae6edefb",
           [Query.equal("userId", user?.$id as unknown as string)]
         );
-        console.log(response);
         setFileList(response.documents);
       } catch (error) {
         console.error(error);
@@ -138,7 +129,6 @@ const UploadPage = () => {
     const file = files[0];
     const fileData = file as File;
     const fileId = ID.unique();
-    console.log(fileData, fileId);
 
     // Upload file to bucket
     const response = await uploadMutation.mutateAsync({ fileId, fileData });

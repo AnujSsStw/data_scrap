@@ -62,8 +62,6 @@ export function InitialFocus({
         ]
       );
 
-      console.log("here", documents);
-
       if (total == 0) {
         const res = await databases.createDocument(
           "648845ce0fe8f2d33b33",
@@ -76,7 +74,6 @@ export function InitialFocus({
             userId: userId,
           }
         );
-        console.log(res);
         setDocId(res.$id);
       } else {
         if (documents[0]?.last_limit != sliderValue) {
@@ -90,11 +87,10 @@ export function InitialFocus({
           );
           setDocId(res.$id);
           setCursor(documents[0]!.file_cursor);
-          console.log(res);
         }
       }
     } catch (error) {
-      console.log("while doing doc thing in next", error);
+      console.log(error);
     }
   }
 

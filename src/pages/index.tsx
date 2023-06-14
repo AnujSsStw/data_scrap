@@ -46,7 +46,6 @@ const Home: NextPage = () => {
   const mutation = useMutation({
     mutationFn: mutfn,
     onSuccess: (data) => {
-      console.log(data);
       queryClient.setQueryData(["search", {}], data.response);
     },
   });

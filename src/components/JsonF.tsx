@@ -25,7 +25,6 @@ export const JsonF = () => {
 
       // technically, dataType and q is not required for json
       const payload = createPayload(selected, parseInt(sliderValue), q, format);
-      console.log(payload);
 
       if (!payload) {
         return;
@@ -40,13 +39,11 @@ export const JsonF = () => {
           link: string;
           result: { $id: string; bucketId: string };
         };
-        console.log(res);
 
         const result = storage.getFileDownload(
           res.result.bucketId,
           res.result.$id
         );
-        console.log(result);
 
         // Create a temporary anchor element
         const downloadLink = document.createElement("a");
@@ -56,12 +53,12 @@ export const JsonF = () => {
 
         downloadLink.remove();
       } catch (error) {
-        console.log("tell me whe", error);
+        console.log(error);
       }
     };
-    fn()
-      .then(() => setIsDownloading(false))
-      .catch((e) => console.log(e));
+    fn().then(() => {
+      setIsDownloading(false);
+    });
   }, []);
 
   return (
