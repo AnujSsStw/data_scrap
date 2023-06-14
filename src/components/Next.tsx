@@ -52,7 +52,7 @@ export function InitialFocus({
 
   async function userDocCheck() {
     try {
-      const { documents, total } = await databases.listDocuments(
+      const { documents } = await databases.listDocuments(
         "648845ce0fe8f2d33b33",
         "648845d55f47e495074e",
         [
@@ -62,7 +62,20 @@ export function InitialFocus({
         ]
       );
 
-      if (total == 0) {
+      if (documents.length > 0 && documents[0]?.$id) {
+        console.log("updating doc");
+        const res = await databases.updateDocument(
+          "648845ce0fe8f2d33b33",
+          "648845d55f47e495074e",
+          documents[0]?.$id as string,
+          {
+            last_limit: sliderValue + documents[0]!.last_limit,
+          }
+        );
+        setDocId(res.$id);
+        setCursor(documents[0]!.file_cursor);
+      } else {
+        console.log("no doc");
         const res = await databases.createDocument(
           "648845ce0fe8f2d33b33",
           "648845d55f47e495074e",
@@ -75,19 +88,6 @@ export function InitialFocus({
           }
         );
         setDocId(res.$id);
-      } else {
-        if (documents[0]?.last_limit != sliderValue) {
-          const res = await databases.updateDocument(
-            "648845ce0fe8f2d33b33",
-            "648845d55f47e495074e",
-            documents[0]?.$id as string,
-            {
-              last_limit: sliderValue + documents[0]!.last_limit,
-            }
-          );
-          setDocId(res.$id);
-          setCursor(documents[0]!.file_cursor);
-        }
       }
     } catch (error) {
       console.log(error);
@@ -115,7 +115,7 @@ export function InitialFocus({
         break;
       case "raw":
         router.push(
-          `/download/[raw]?q=${q}&limit=${sliderValue}`,
+          `/download/[format]?q=${q}&limit=${sliderValue}`,
           `/download/raw?q=${q}&limit=${sliderValue}`
         );
         break;

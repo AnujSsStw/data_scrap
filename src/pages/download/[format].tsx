@@ -1,4 +1,17 @@
-import { Box, Button, Flex, Progress } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Progress,
+  Step,
+  StepDescription,
+  StepIndicator,
+  StepSeparator,
+  StepStatus,
+  StepTitle,
+  Stepper,
+  useSteps,
+  useToast,
+} from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Query } from "appwrite";
 import { useAtom } from "jotai";
@@ -15,6 +28,11 @@ import {
 } from "~/context";
 import { databases, functions, storage } from "~/utils/appwrite";
 
+const steps = [
+  { title: "Generate", description: "Generate data" },
+  { title: "Download", description: "Downlaod the data" },
+];
+
 const Format = () => {
   const router = useRouter();
 
@@ -22,11 +40,6 @@ const Format = () => {
     return <JsonF />;
   }
 
-  const [preview, setPreview] = useState<{
-    preview_data: any[];
-  }>({
-    preview_data: [],
-  });
   const [bucketId, setBukId] = useAtom(createdBucketId);
   const [id, setId] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
@@ -80,62 +93,50 @@ const Format = () => {
       );
 
       if (total == 0) {
-        const { response } = await mutation.mutateAsync({
+        await mutation.mutateAsync({
           functionId: "647c27ecc6e9a01b29a3",
           payload: payload,
         });
 
-        const res = JSON.parse(response);
-
-        setPreview({ preview_data: res["preview data"] });
+        // const res = JSON.parse(response);
       } else {
         // get the bucket id and file id
         if (documents[0]?.TotalCount >= sliderValue) {
           // seth the preview data
           const bucketId = documents[0]!.bucketId;
           setBukId(bucketId);
-
-          const promise = storage.listFiles(bucketId, [
-            Query.limit(parseInt(sliderValue)),
-          ]);
-
-          promise.then(
-            async function (response) {
-              response.files.forEach((file) => {
-                const result = storage.getFilePreview(bucketId, file.$id);
-                setPreview((prev) => ({
-                  preview_data: [...prev.preview_data, result.toString()],
-                }));
-              });
-            },
-            function (error) {
-              console.log(error); // Failure
-            }
-          );
         } else {
           // if the limit is higher than the total count
           // going to run the function again but with keeping in mind that the data is already there so we need to append the data
           // but going to give user a cursor of last file id (last file id from which the new data will be appended)
           // so when listing the files we can start from that file id and go to the end
 
-          const { response } = await mutation.mutateAsync({
+          await mutation.mutateAsync({
             functionId: "647c27ecc6e9a01b29a3",
             payload: payload,
           });
 
-          const res = JSON.parse(response);
-
-          setPreview({ preview_data: res["preview data"] });
+          // const res = JSON.parse(response);
         }
       }
 
       await handleClick();
+      goToNext();
     } catch (error) {
       console.log(error);
     }
   };
-
+  const toast = useToast();
   const downloadFile = useCallback(async () => {
+    toast({
+      title: "Downloading",
+      description:
+        "If the Progress bar is not moving, please wait or click again",
+      status: "info",
+      duration: 5000,
+      isClosable: true,
+    });
+
     try {
       const zip = new JSZip();
       const totalFiles = id.length;
@@ -167,12 +168,14 @@ const Format = () => {
     } catch (error) {
       console.log(error);
     }
+
+    goToNext();
   }, [id]);
 
   const handleClick = async () => {
     const promise = storage.listFiles(bucketId, [
       Query.limit(router.query.limit as unknown as number),
-      file_cursor ? Query.cursorAfter(file_cursor) : Query.orderAsc("name"),
+      // file_cursor ? Query.cursorAfter(file_cursor) : Query.orderAsc("name"),
     ]);
     const data: any = [];
     promise.then(
@@ -184,7 +187,8 @@ const Format = () => {
         setId(data);
         try {
           // user doc
-          const res = await databases.updateDocument(
+
+          await databases.updateDocument(
             "648845ce0fe8f2d33b33",
             "648845d55f47e495074e",
             docId,
@@ -202,6 +206,11 @@ const Format = () => {
     );
   };
 
+  const { activeStep, goToNext } = useSteps({
+    index: 0,
+    count: steps.length,
+  });
+
   return (
     <div>
       {progress > 0 && (
@@ -211,29 +220,49 @@ const Format = () => {
         </Box>
       )}
 
-      <Box display={"flex"} justifyContent={"center"} p={5}>
-        <Button
-          onClick={startL1}
-          variant={"outline"}
-          isLoading={mutation.isLoading}
-        >
-          Start Generating
-        </Button>
-      </Box>
-      {id.length > 0 && (
-        <Flex justifyContent={"center"}>
-          <Button onClick={downloadFile}>Download {id.length} file</Button>
-        </Flex>
-      )}
-      {/* <Stack spacing={8} display={"flex"} gap={4} flexDir={"row"}>
-        {preview.preview_data.map((item, idx) => {
-          return (
-            <Box key={idx}>
-              <Image alt="prev" src={item} width={200} height={200} />
+      <Stepper
+        size="lg"
+        colorScheme="yellow"
+        index={activeStep}
+        maxW={800}
+        mx={"auto"}
+        pt={10}
+      >
+        {steps.map((step, index) => (
+          <Step key={index}>
+            <StepIndicator>
+              <StepStatus complete={`✅`} incomplete={`😅`} active={`📍`} />
+            </StepIndicator>
+
+            <Box flexShrink="0">
+              <StepTitle>{step.title}</StepTitle>
+              <StepDescription>{step.description}</StepDescription>
             </Box>
-          );
-        })}
-      </Stack> */}
+
+            <StepSeparator />
+          </Step>
+        ))}
+      </Stepper>
+
+      {activeStep === 0 && (
+        <Box display={"flex"} justifyContent={"center"} p={5}>
+          <Button
+            onClick={startL1}
+            variant={"outline"}
+            isLoading={mutation.isLoading}
+          >
+            Start Generating
+          </Button>
+        </Box>
+      )}
+
+      {activeStep === 1 && (
+        <Box display={"flex"} justifyContent={"center"} p={5}>
+          <Button variant={"outline"} onClick={downloadFile}>
+            Download {id.length} files
+          </Button>
+        </Box>
+      )}
     </div>
   );
 };
