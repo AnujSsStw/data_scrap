@@ -4,6 +4,7 @@ import {
   Button,
   Input,
   InputGroup,
+  useToast,
   InputLeftElement,
   Skeleton,
 } from "@chakra-ui/react";
@@ -50,7 +51,29 @@ const Home: NextPage = () => {
     },
   });
 
+  const toast = useToast();
+
   const handleSearch = async () => {
+    if (!user) {
+      toast({
+        title: "Not logged in",
+        description: "Please login to continue",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    } else if (topic === "") {
+      toast({
+        title: "No topic",
+        description: "Please enter a topic",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
     setData({
       chan_4: [],
       subreddits: [],

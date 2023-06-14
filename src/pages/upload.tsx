@@ -8,7 +8,8 @@ import {
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { ID, Models, Query } from "appwrite";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { use, useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { UserContext } from "~/context";
 import { databases, storage } from "~/utils/appwrite";
@@ -122,7 +123,16 @@ const UploadPage = () => {
 
   const handleUpload = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
+    if (!user) {
+      toast({
+        title: "Not logged in",
+        description: "Please login to continue",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
     if (!files?.length) return;
 
     const file = files[0];

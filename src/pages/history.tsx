@@ -13,7 +13,6 @@ import {
 import { Models, Query } from "appwrite";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
-import { set } from "zod";
 import { UserContext } from "~/context";
 import { databases } from "~/utils/appwrite";
 
@@ -44,7 +43,8 @@ const History = () => {
         }
       }
     };
-    history();
+    if (user) history();
+    else setLoading(false);
   }, [user]);
 
   return (

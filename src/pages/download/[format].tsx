@@ -1,10 +1,10 @@
-import { Box, Button, Progress, Stack } from "@chakra-ui/react";
-import { useMutation } from "@tanstack/react-query";
+import { Box, Button, Flex, Progress } from "@chakra-ui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Query } from "appwrite";
 import { useAtom } from "jotai";
 import JSZip from "jszip";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { JsonF } from "~/components/JsonF";
 import {
   Payload,
@@ -12,23 +12,31 @@ import {
   createdDocId,
   cursor,
   payloadForL1,
-  preview_data,
 } from "~/context";
 import { databases, functions, storage } from "~/utils/appwrite";
 
 const Format = () => {
   const router = useRouter();
+
+  // IsLogin();
+
   if (router.query.format === "json") {
     return <JsonF />;
   }
 
-  const [preview, setPreview] = useAtom(preview_data);
+  const [preview, setPreview] = useState<{
+    preview_data: any[];
+  }>({
+    preview_data: [],
+  });
   const [bucketId, setBukId] = useAtom(createdBucketId);
   const [id, setId] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
   const [docId] = useAtom(createdDocId);
   const [selected] = useAtom(payloadForL1);
   const [file_cursor] = useAtom(cursor);
+
+  const queryClient = useQueryClient();
 
   const mutfn = async ({
     functionId,
@@ -44,6 +52,7 @@ const Format = () => {
     mutationFn: mutfn,
     onSuccess: (data) => {
       console.log(data);
+      queryClient.setQueryData(["filesId", {}], data.response);
     },
   });
 
@@ -67,12 +76,14 @@ const Format = () => {
       );
       console.log(payload);
 
-      // check if preview data exists
+      // check if preview data exists 6488481a124ee5bcb962 6488480242f3b85a5c4e
       const { total, documents } = await databases.listDocuments(
         "6488480242f3b85a5c4e",
         "6488481a124ee5bcb962",
         [Query.equal("topic", [q, selected.subreddits[0] as unknown as string])]
       );
+
+      console.log(total, documents);
 
       if (total == 0) {
         console.log("no preview data");
@@ -82,6 +93,7 @@ const Format = () => {
         });
 
         const res = JSON.parse(response);
+        console.log("creating new data");
 
         console.log(res);
 
@@ -94,6 +106,24 @@ const Format = () => {
           console.log("preview data with under limit");
           const bucketId = documents[0]!.bucketId;
           setBukId(bucketId);
+
+          const promise = storage.listFiles(bucketId, [
+            Query.limit(parseInt(sliderValue)),
+          ]);
+
+          promise.then(
+            async function (response) {
+              response.files.forEach((file) => {
+                const result = storage.getFilePreview(bucketId, file.$id);
+                setPreview((prev) => ({
+                  preview_data: [...prev.preview_data, result.toString()],
+                }));
+              });
+            },
+            function (error) {
+              console.log("while seeting previ i already exist one", error); // Failure
+            }
+          );
         } else {
           // if the limit is higher than the total count
           // going to run the function again but with keeping in mind that the data is already there so we need to append the data
@@ -153,6 +183,8 @@ const Format = () => {
     }
   }, [id]);
 
+  console.log(id);
+
   const handleClick = async () => {
     const promise = storage.listFiles(bucketId, [
       Query.limit(router.query.limit as unknown as number),
@@ -197,17 +229,28 @@ const Format = () => {
       )}
 
       <Box display={"flex"} justifyContent={"center"} p={5}>
-        <Button onClick={startL1} variant={"outline"}>
+        <Button
+          onClick={startL1}
+          variant={"outline"}
+          isLoading={mutation.isLoading}
+        >
           Start Generating
         </Button>
       </Box>
-      <button onClick={downloadFile}>Download file </button>
-      {id && id.map((d: any, idx) => <p key={idx}>{d}</p>)}
-      <Stack spacing={8} display={"flex"}>
+      {id.length > 0 && (
+        <Flex justifyContent={"center"}>
+          <Button onClick={downloadFile}>Download {id.length} file</Button>
+        </Flex>
+      )}
+      {/* <Stack spacing={8} display={"flex"} gap={4} flexDir={"row"}>
         {preview.preview_data.map((item, idx) => {
-          return <Box key={idx}>ok</Box>;
+          return (
+            <Box key={idx}>
+              <Image alt="prev" src={item} width={200} height={200} />
+            </Box>
+          );
         })}
-      </Stack>
+      </Stack> */}
     </div>
   );
 };
