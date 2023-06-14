@@ -140,13 +140,19 @@ def main(req, res):
             result = storage.create_bucket(
                 bucket_id=bucket_Id,
                 name=bucket_Id,
+                file_security=None,
                 permissions=[
-                    Permission.create(Role.any()),
                     Permission.read(Role.any()),
-                    Permission.write(Role.any()),
+                    Permission.create(Role.users()),
+                    Permission.update(Role.users()),
+                    Permission.delete(Role.users()),
                 ],
                 enabled=True,
-                # file_security=True,
+                # maximum_file_size=1000000,
+                # allowed_file_extensions=[],
+                # compression="none",
+                # encryption=False,
+                # antivirus=False,
             )
             print("bucket created", result)
 

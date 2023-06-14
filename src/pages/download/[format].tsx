@@ -42,6 +42,7 @@ const Format = () => {
 
   const [bucketId, setBukId] = useAtom(createdBucketId);
   const [id, setId] = useState<string[]>([]);
+  const [actualDataLength, setActualDataLength] = useState(0); // this is the actual data length
   const [progress, setProgress] = useState(0);
   const [docId] = useAtom(createdDocId);
   const [selected] = useAtom(payloadForL1);
@@ -173,37 +174,34 @@ const Format = () => {
   }, [id]);
 
   const handleClick = async () => {
-    const promise = storage.listFiles(bucketId, [
-      Query.limit(router.query.limit as unknown as number),
-      // file_cursor ? Query.cursorAfter(file_cursor) : Query.orderAsc("name"),
-    ]);
-    const data: any = [];
-    promise.then(
-      async function (response) {
-        response.files.forEach((file) => {
-          data.push(file.$id);
-        });
+    try {
+      const { files } = await storage.listFiles(bucketId, [
+        Query.limit(router.query.limit as unknown as number),
+        // file_cursor ? Query.cursorAfter(file_cursor) : Query.orderAsc("name"),
+      ]);
 
-        setId(data);
-        try {
-          // user doc
+      files.forEach((file) => {
+        id.push(file.$id);
+      });
+      setId(id);
 
-          await databases.updateDocument(
-            "648845ce0fe8f2d33b33",
-            "648845d55f47e495074e",
-            docId,
-            {
-              file_cursor: response.files[response.files.length - 1]?.$id,
-            }
-          );
-        } catch (error) {
-          console.log(error);
-        }
-      },
-      function (error) {
-        console.log(error); // Failure
+      setActualDataLength(files.length);
+
+      if (files.length > 0 && docId) {
+        await databases.updateDocument(
+          "648845ce0fe8f2d33b33",
+          "648845d55f47e495074e",
+          docId,
+          {
+            file_cursor: files[files.length - 1]?.$id,
+          }
+        );
       }
-    );
+
+      if (files.length === 0) setId(id);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const { activeStep, goToNext } = useSteps({
@@ -259,7 +257,7 @@ const Format = () => {
       {activeStep === 1 && (
         <Box display={"flex"} justifyContent={"center"} p={5}>
           <Button variant={"outline"} onClick={downloadFile}>
-            Download {id.length} files
+            Download {actualDataLength} files
           </Button>
         </Box>
       )}
