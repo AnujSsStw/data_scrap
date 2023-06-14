@@ -25,7 +25,7 @@ def main(req, res):
 
         tweets = []
         if payload["fromL1"]:
-            if payload["dataType"] == "csv":
+            if payload["dataType"] == "json":
                 for i, tweet in enumerate(allT):
                     if i > payload["limit"]:
                         break
@@ -33,9 +33,10 @@ def main(req, res):
                         {
                             "content": tweet.rawContent,
                             "media": tweet.media[0] if tweet.media else None,
+                            "likes": tweet.likeCount,
                         }
                     )
-            elif payload["dataType"] == "json" or payload["dataType"] == "raw":
+            elif payload["dataType"] == "raw":
                 for i, tweet in enumerate(allT):
                     if i > payload["limit"]:
                         break

@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Flex, Spinner, useToast } from "@chakra-ui/react";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ export const JsonF = () => {
   const [selected] = useAtom(payloadForL1);
   const [isDownloading, setIsDownloading] = useState(true);
   const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     const fn = async () => {
@@ -35,10 +36,18 @@ export const JsonF = () => {
           payload
         );
 
-        const res = JSON.parse(response) as {
-          link: string;
-          result: { $id: string; bucketId: string };
-        };
+        if (response.length === 0) {
+          toast({
+            title: "No data found",
+            description: "Please try again",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+          return;
+        }
+
+        const res = JSON.parse(response) as any;
 
         const result = storage.getFileDownload(
           res.result.bucketId,
@@ -64,7 +73,10 @@ export const JsonF = () => {
   return (
     <Box display={"flex"} justifyContent={"center"} p={10}>
       {isDownloading ? (
-        <p>JSON is being created</p>
+        <Flex>
+          JSON is being created
+          <Spinner />
+        </Flex>
       ) : (
         <p>JSON is ready for download</p>
       )}

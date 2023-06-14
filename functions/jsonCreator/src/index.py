@@ -106,13 +106,16 @@ def main(req, res):
 
 
 # whatever reddit that offer currently -> images, gifs, videos, other(text, link)
-def gen1(payload: dict, functions: Functions, shared_dict: dict):
+def gen1(payload: dict, functions: Functions, shared_list: list):
     if len(payload["gen1"]["subreddits"]) > 0:
-        urlGen1R = functions.create_execution(
-            "647f888eeaa470f6a362", json.dumps(payload["gen1"])
-        )
-        if urlGen1R["status"] == "completed":
-            shared_dict["reddit"] = json.loads(urlGen1R["response"])["urls"]
+        try:
+            urlGen1R = functions.create_execution(
+                "647f888eeaa470f6a362", json.dumps(payload["gen1"])
+            )
+            if urlGen1R["status"] == "completed":
+                shared_list.extend(json.loads(urlGen1R["response"])["urls"]["image"])
+        except Exception as e:
+            print("error while gen1", e)
 
 
 # images from 4chan and weird stuff
