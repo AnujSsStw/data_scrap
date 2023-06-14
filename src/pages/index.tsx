@@ -2,11 +2,13 @@ import { Search2Icon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Flex,
   Input,
   InputGroup,
-  useToast,
   InputLeftElement,
   Skeleton,
+  Text,
+  useToast,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
@@ -180,6 +182,17 @@ const Home: NextPage = () => {
               );
             }
           )}
+          {data.pinterest.map((item: string, idx: Key | null | undefined) => {
+            return (
+              <Flex flexDir={"column"} gap={4} key={idx}>
+                <Text>
+                  Highly recommend it, especially if the topic is widely known
+                  or popular &#9660;
+                </Text>
+                <CardBox title={item} source="pinterest" />
+              </Flex>
+            );
+          })}
           {data.chan_4.map(
             (
               item: { board: string; title: string | undefined },
@@ -211,9 +224,6 @@ const Home: NextPage = () => {
               );
             }
           )}
-          {data.pinterest.map((item: string, idx: Key | null | undefined) => {
-            return <CardBox title={item} key={idx} source="pinterest" />;
-          })}
           {/* </Box> */}
         </Skeleton>
       </main>
