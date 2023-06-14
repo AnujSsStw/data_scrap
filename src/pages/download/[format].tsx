@@ -30,6 +30,7 @@ import { databases, functions, storage } from "~/utils/appwrite";
 
 const steps = [
   { title: "Generate", description: "Generate data" },
+  { title: "List", description: "List the data" },
   { title: "Download", description: "Downlaod the data" },
 ];
 
@@ -120,7 +121,7 @@ const Format = () => {
         }
       }
 
-      await handleClick();
+      // await handleClick();
       goToNext();
     } catch (error) {
       console.log(error);
@@ -204,6 +205,8 @@ const Format = () => {
         duration: 5000,
         isClosable: true,
       });
+
+      goToNext();
     } catch (error) {
       console.log("error on bucketfile", error);
     }
@@ -260,6 +263,14 @@ const Format = () => {
       )}
 
       {activeStep === 1 && (
+        <Box display={"flex"} justifyContent={"center"} p={5}>
+          <Button variant={"outline"} onClick={handleClick}>
+            List files
+          </Button>
+        </Box>
+      )}
+
+      {activeStep === 2 && (
         <Box display={"flex"} justifyContent={"center"} p={5}>
           <Button variant={"outline"} onClick={downloadFile}>
             Download {id.length} files
