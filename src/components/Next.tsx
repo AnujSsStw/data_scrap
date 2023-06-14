@@ -142,7 +142,10 @@ export function InitialFocus({
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel>Limit (100% is 100 for now)</FormLabel>
+              <FormLabel>
+                Limit (100% is 100 for now because of cloud v1.1.2 max limit on
+                queries)
+              </FormLabel>
               <Slider
                 id="slider"
                 defaultValue={5}

@@ -196,6 +196,14 @@ const Format = () => {
       }
 
       if (files.length === 0) setId(id);
+      toast({
+        title: "Note",
+        description:
+          "If at the end you get 0 files, please try again. Next time it will work because the data is already there. Probably server error or rendering error.",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
       console.log("error on bucketfile", error);
     }
@@ -251,7 +259,7 @@ const Format = () => {
         </Box>
       )}
 
-      {activeStep === 1 && id.length > 0 && (
+      {activeStep === 1 && (
         <Box display={"flex"} justifyContent={"center"} p={5}>
           <Button variant={"outline"} onClick={downloadFile}>
             Download {id.length} files
