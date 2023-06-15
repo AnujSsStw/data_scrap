@@ -17,7 +17,7 @@
 
 ### Data Storage and Export
 
-Facilities to store scraped data in a structured format such as JSON, or a database. Additionally, the ability to export the data for further analysis or integration with other systems.
+Facilities to store scraped data in a structured format such as JSON, or a database. Additionally, the ability to export the data for further analysis.
 
 ### User-Friendly Interface
 
