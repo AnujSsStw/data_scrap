@@ -132,7 +132,7 @@ const Home: NextPage = () => {
           </InputGroup>
 
           <Button colorScheme="teal" variant="outline" onClick={handleSearch}>
-            serach
+            search
           </Button>
         </Box>
 
